@@ -8,10 +8,9 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.OnMapReadyCallback;
 
 
-public class MainActivity extends ActionBarActivity implements OnMapReadyCallback{
+public class MainActivity extends ActionBarActivity{
     private GoogleMap googleMap;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +57,7 @@ public class MainActivity extends ActionBarActivity implements OnMapReadyCallbac
                         "Sorry! unable to create maps", Toast.LENGTH_SHORT)
                         .show();
             }
+            googleMap.setMyLocationEnabled(true);
         }
     }
     @Override
@@ -67,8 +67,5 @@ public class MainActivity extends ActionBarActivity implements OnMapReadyCallbac
     }
 
 
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        googleMap.setMyLocationEnabled(true);
-    }
+
 }
