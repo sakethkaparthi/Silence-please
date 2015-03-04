@@ -5,6 +5,6 @@
         <!-- Customize your theme here. -->
     </style>
     <style name="MyActionBar" parent="@android:style/Widget.Holo.Light.ActionBar">
-        <item name="android:background">FF2294F2</item>
+        <item name="android:background">03A9F4</item>
     </style>
 </resources>
