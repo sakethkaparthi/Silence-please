@@ -1,8 +1,5 @@
 package neinlabs.silenceplease;
 
-import android.app.ActionBar;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -17,7 +14,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 
 public class MainActivity extends ActionBarActivity implements OnMapReadyCallback{
-    ActionBar actionBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,18 +22,13 @@ public class MainActivity extends ActionBarActivity implements OnMapReadyCallbac
         MapFragment mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        actionBar = getActionBar();
-        actionBar.setBackgroundDrawable(new ColorDrawable(Color.BLUE));
     }
      @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
-
-
-
-     }
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -52,6 +44,7 @@ public class MainActivity extends ActionBarActivity implements OnMapReadyCallbac
 
         return super.onOptionsItemSelected(item);
     }
+
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
