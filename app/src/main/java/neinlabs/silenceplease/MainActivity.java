@@ -8,9 +8,10 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements OnMapReadyCallback{
     private GoogleMap googleMap;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,4 +66,9 @@ public class MainActivity extends ActionBarActivity {
         initilizeMap();
     }
 
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        googleMap.setMyLocationEnabled(true);
+    }
 }
