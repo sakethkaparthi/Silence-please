@@ -13,8 +13,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 
-public class MainActivity extends Activity implements OnMapReadyCallback{
-
+public class MainActivity extends Activity implements OnMapReadyCallback,GoogleMap.OnMapClickListener{
+    GoogleMap myMap;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,6 +58,18 @@ public class MainActivity extends Activity implements OnMapReadyCallback{
         marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
 // adding marker
         googleMap.addMarker(marker);
+        MapFragment mapFragment = (MapFragment) getFragmentManager()
+                .findFragmentById(R.id.map);
+        myMap = mapFragment.getMap();
+        myMap.setOnMapClickListener(this);
 
     }
+
+    @Override
+    public void onMapClick(LatLng latLng) {
+        myMap.clear();
+        MarkerOptions marker = new MarkerOptions().draggable(true).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)).position(latLng).title("is marker");
+        myMap.addMarker(marker);
+
+       }
 }
