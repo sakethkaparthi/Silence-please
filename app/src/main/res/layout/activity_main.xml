@@ -13,11 +13,17 @@
         android:id="@+id/b"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/map"/>
-    <EditText
-        android:id="@+id/et"
-        android:layout_width="wrap_content"
+        android:layout_below="@id/map"
+        android:text="save this location"/>
+    <LinearLayout
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/b"/>
-
+        android:orientation="horizontal"
+        android:layout_below="@id/b">
+        <EditText
+            android:id="@+id/et"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            />
+        </LinearLayout>
 </RelativeLayout>
