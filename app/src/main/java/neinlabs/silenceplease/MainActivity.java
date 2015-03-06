@@ -1,9 +1,12 @@
 package neinlabs.silenceplease;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -63,13 +66,23 @@ public class MainActivity extends Activity implements OnMapReadyCallback,GoogleM
         myMap = mapFragment.getMap();
         myMap.setOnMapClickListener(this);
 
+
     }
 
     @Override
-    public void onMapClick(LatLng latLng) {
+    public void onMapClick(final LatLng latLng) {
         myMap.clear();
         MarkerOptions marker = new MarkerOptions().draggable(true).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)).position(latLng).title("is marker");
         myMap.addMarker(marker);
-
+        Button b = (Button)findViewById(R.id.b);
+        b.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                test k = new test();
+                k.setk(String.valueOf(latLng.latitude));
+                k.setl(String.valueOf(latLng.longitude));
+                startActivity(new Intent(MainActivity.this, test.class));
+            }
+        });
        }
 }
