@@ -35,7 +35,7 @@ public class test extends Activity {
         Linear  = (LinearLayout)findViewById(R.id.linear);
         Toast.makeText(getApplicationContext(), "Creating table.", Toast.LENGTH_SHORT).show();
         createTable();
-        insertIntoTable(k,l);
+        insertIntoTable(n,k,l);
         Toast.makeText(getApplicationContext(), "Showing table values after updation.", Toast.LENGTH_SHORT).show();
         showTableValues();
     }
@@ -50,17 +50,17 @@ public class test extends Activity {
     public void createTable(){
         try{
             mydb = openOrCreateDatabase(DBNAME, Context.MODE_PRIVATE,null);
-            mydb.execSQL("CREATE TABLE IF  NOT EXISTS "+ TABLE +" (ID INTEGER PRIMARY KEY, NAME TEXT, PLACE TEXT, );");
+            mydb.execSQL("CREATE TABLE IF  NOT EXISTS "+ TABLE +" (ID INTEGER PRIMARY KEY, NAME TEXT,LATITUDE TEXT,LONGITUDE TEXT);");
             mydb.close();
         }catch(Exception e){
             Toast.makeText(getApplicationContext(), "Error in creating table", Toast.LENGTH_LONG);
         }
     }
     // THIS FUNCTION INSERTS DATA TO THE DATABASE
-    public void insertIntoTable(String name,String place){
+    public void insertIntoTable(String name,String lat,String lon){
         try{
             mydb = openOrCreateDatabase(DBNAME, Context.MODE_PRIVATE,null);
-            mydb.execSQL("INSERT INTO " + TABLE + "(NAME, PLACE) VALUES('"+ name +"','"+place+"')");
+            mydb.execSQL("INSERT INTO " + TABLE + "(NAME,LATITUDE,LONGITUDE) VALUES('"+ name +"','"+lat+"','"+lon+"');");
             mydb.close();
         }catch(Exception e){
             Toast.makeText(getApplicationContext(), "Error in inserting into table", Toast.LENGTH_LONG);
@@ -73,7 +73,8 @@ public class test extends Activity {
             Cursor allrows  = mydb.rawQuery("SELECT * FROM "+  TABLE, null);
             System.out.println("COUNT : " + allrows.getCount());
             Integer cindex = allrows.getColumnIndex("NAME");
-            Integer cindex1 = allrows.getColumnIndex("PLACE");
+            Integer cindex1 = allrows.getColumnIndex("LATITUDE");
+            Integer cindex2 = allrows.getColumnIndex("LONGITUDE");
 
             TextView t = new TextView(this);
             t.setText("========================================");
@@ -84,26 +85,31 @@ public class test extends Activity {
                 do{
                     LinearLayout id_row   = new LinearLayout(this);
                     LinearLayout name_row = new LinearLayout(this);
-                    LinearLayout place_row= new LinearLayout(this);
+                    LinearLayout lat_row= new LinearLayout(this);
+                    LinearLayout lon_row= new LinearLayout(this);
 
                     final TextView id_  = new TextView(this);
                     final TextView name_ = new TextView(this);
-                    final TextView place_ = new TextView(this);
+                    final TextView lat_ = new TextView(this);
+                    final TextView lon_ = new TextView(this);
                     final TextView   sep  = new TextView(this);
 
                     String ID = allrows.getString(0);
                     String NAME= allrows.getString(1);
-                    String PLACE= allrows.getString(2);
+                    String LATITUDE= allrows.getString(2);
+                    String LONGITUDE= allrows.getString(2);
 
                     id_.setTextColor(Color.RED);
                     id_.setPadding(20, 5, 0, 5);
                     name_.setTextColor(Color.RED);
                     name_.setPadding(20, 5, 0, 5);
-                    place_.setTextColor(Color.RED);
-                    place_.setPadding(20, 5, 0, 5);
+                    lat_.setTextColor(Color.RED);
+                    lat_.setPadding(20, 5, 0, 5);
+                    lon_.setTextColor(Color.RED);
+                    lon_.setPadding(20, 5, 0, 5);
 
-                    System.out.println("NAME " + allrows.getString(cindex) + " PLACE : "+ allrows.getString(cindex1));
-                    System.out.println("ID : "+ ID  + " || NAME " + NAME + "|| PLACE : "+ PLACE);
+                    System.out.println("NAME " + allrows.getString(cindex) + " LATITUDE : "+ allrows.getString(cindex1)+ " LONGITUDE : "+ allrows.getString(cindex2));
+                    System.out.println("ID : "+ ID  + " || NAME " + NAME + "|| LATITUDE : "+ LATITUDE+"||LONGITUDE: "+LONGITUDE);
 
                     id_.setText("ID : " + ID);
                     id_row.addView(id_);
@@ -111,9 +117,12 @@ public class test extends Activity {
                     name_.setText("NAME : "+NAME);
                     name_row.addView(name_);
                     Linear.addView(name_row);
-                    place_.setText("PLACE : " + PLACE);
-                    place_row.addView(place_);
-                    Linear.addView(place_row);
+                    lat_.setText("LATITUDE : " + LATITUDE);
+                    lat_row.addView(lat_);
+                    Linear.addView(lat_row);
+                    lon_.setText("LONGITUDE : " +LONGITUDE);
+                    lon_row.addView(lon_);
+                    Linear.addView(lon_row);
                     sep.setText("---------------------------------------------------------------");
                     Linear.addView(sep);
                 }

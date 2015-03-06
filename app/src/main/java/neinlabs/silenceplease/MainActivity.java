@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -74,6 +75,7 @@ public class MainActivity extends Activity implements OnMapReadyCallback,GoogleM
         myMap.clear();
         MarkerOptions marker = new MarkerOptions().draggable(true).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)).position(latLng).title("is marker");
         myMap.addMarker(marker);
+        final EditText et = (EditText)findViewById(R.id.et);
         Button b = (Button)findViewById(R.id.b);
         b.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,6 +83,7 @@ public class MainActivity extends Activity implements OnMapReadyCallback,GoogleM
                 test k = new test();
                 k.setk(String.valueOf(latLng.latitude));
                 k.setl(String.valueOf(latLng.longitude));
+                k.setn(et.getText().toString());
                 startActivity(new Intent(MainActivity.this, test.class));
             }
         });
