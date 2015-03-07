@@ -1,7 +1,10 @@
 package neinlabs.silenceplease;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,6 +23,9 @@ import neinlabs.silenceplease.buttons.FloatingActionButton;
 
 public class MainActivity extends Activity implements OnMapReadyCallback,GoogleMap.OnMapClickListener{
     GoogleMap myMap;
+    SQLiteDatabase mydb;
+    private static String DBNAME = "PERSONS.db";    // THIS IS THE SQLITE DATABASE FILE NAME.
+    private static String TABLE = "MY_TABLE";       // THIS IS THE TABLE NAME
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,30 +59,30 @@ public class MainActivity extends Activity implements OnMapReadyCallback,GoogleM
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-    googleMap.setMyLocationEnabled(true);
-        // latitude and longitude
-        double latitude =12.1231231 ;
-        double longitude = 23.21321312;
-
-// create marker
-        MarkerOptions marker = new MarkerOptions().position(new LatLng(latitude, longitude)).title("Hello Maps ");
-        marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-// adding marker
-        googleMap.addMarker(marker);
-        MapFragment mapFragment = (MapFragment) getFragmentManager()
-                .findFragmentById(R.id.map);
-        myMap = mapFragment.getMap();
-        myMap.setOnMapClickListener(this);
+        googleMap.setMyLocationEnabled(true);
 
 
+            MapFragment mapFragment = (MapFragment) getFragmentManager()
+                    .findFragmentById(R.id.map);
+            myMap = mapFragment.getMap();
+            myMap.setOnMapClickListener(this);
+        myMap.clear();
+        myMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+        mydb = openOrCreateDatabase(DBNAME, Context.MODE_PRIVATE, null);
+        Cursor allrows = mydb.rawQuery("SELECT * FROM " + TABLE, null);
+        for (int i = 0;i<allrows.getCount();i++){
+            allrows.moveToPosition(i);
+            String NAME = allrows.getString(1);
+            String LATITUDE = allrows.getString(2);
+            String LONGITUDE = allrows.getString(3);
+            MarkerOptions marker = new MarkerOptions().position(new LatLng(Double.parseDouble(LATITUDE), Double.parseDouble(LONGITUDE))).title(NAME);
+            marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+            myMap.addMarker(marker);
+        }
     }
-
     @Override
     public void onMapClick(final LatLng latLng) {
-        myMap.clear();
 
-        MarkerOptions marker = new MarkerOptions().draggable(true).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)).position(latLng).title("is marker");
-        myMap.addMarker(marker);
         final EditText et = (EditText)findViewById(R.id.et);
         et.setVisibility(View.VISIBLE);
         FloatingActionButton fb = (FloatingActionButton)findViewById(R.id.normal_plus);

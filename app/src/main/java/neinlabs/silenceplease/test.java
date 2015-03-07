@@ -120,7 +120,7 @@ public class test extends Activity {
                     String ID = allrows.getString(0);
                     String NAME= allrows.getString(1);
                     String LATITUDE= allrows.getString(2);
-                    String LONGITUDE= allrows.getString(2);
+                    String LONGITUDE= allrows.getString(3);
 
                     id_.setTextColor(Color.RED);
                     id_.setPadding(20, 5, 0, 5);
