@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -15,6 +14,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import neinlabs.silenceplease.buttons.FloatingActionButton;
 
 
 public class MainActivity extends Activity implements OnMapReadyCallback,GoogleMap.OnMapClickListener{
@@ -73,11 +74,13 @@ public class MainActivity extends Activity implements OnMapReadyCallback,GoogleM
     @Override
     public void onMapClick(final LatLng latLng) {
         myMap.clear();
+
         MarkerOptions marker = new MarkerOptions().draggable(true).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)).position(latLng).title("is marker");
         myMap.addMarker(marker);
         final EditText et = (EditText)findViewById(R.id.et);
-        Button b = (Button)findViewById(R.id.b);
-        b.setOnClickListener(new View.OnClickListener() {
+        et.setVisibility(View.VISIBLE);
+        FloatingActionButton fb = (FloatingActionButton)findViewById(R.id.normal_plus);
+        fb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 test k = new test();
