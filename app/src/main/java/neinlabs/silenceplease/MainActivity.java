@@ -100,6 +100,7 @@ public class MainActivity extends Activity implements OnMapReadyCallback,GoogleM
         view.startAnimation(animation);
     }
 
+
     @Override
     public void onMapClick(final LatLng latLng) {
         FloatingActionButton fb = (FloatingActionButton)findViewById(R.id.normal_plus);
