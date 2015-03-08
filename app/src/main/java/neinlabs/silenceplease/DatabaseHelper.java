@@ -12,7 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class test extends Activity {
+public class DatabaseHelper extends Activity {
 
     LinearLayout Linear;
     SQLiteDatabase mydb;

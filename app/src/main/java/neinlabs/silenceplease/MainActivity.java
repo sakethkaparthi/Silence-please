@@ -110,11 +110,11 @@ public class MainActivity extends Activity implements OnMapReadyCallback,GoogleM
         fb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                test k = new test();
+                DatabaseHelper k = new DatabaseHelper();
                 k.setk(String.valueOf(latLng.latitude));
                 k.setl(String.valueOf(latLng.longitude));
                 k.setn(et.getText().toString());
-                startActivity(new Intent(MainActivity.this, test.class));
+                startActivity(new Intent(MainActivity.this, DatabaseHelper.class));
             }
         });
        }
