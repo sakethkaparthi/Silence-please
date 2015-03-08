@@ -24,6 +24,7 @@ import neinlabs.silenceplease.buttons.FloatingActionButton;
 
 
 public class MainActivity extends Activity implements OnMapReadyCallback,GoogleMap.OnMapClickListener{
+
     GoogleMap myMap;
     SQLiteDatabase mydb;
     private static String DBNAME = "PERSONS.db";    // THIS IS THE SQLITE DATABASE FILE NAME.
@@ -43,6 +44,9 @@ public class MainActivity extends Activity implements OnMapReadyCallback,GoogleM
         startAnim(et);
         fb.setAlpha(1f);
         et.setAlpha(1f);
+
+
+
     }
      @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -78,7 +82,6 @@ public class MainActivity extends Activity implements OnMapReadyCallback,GoogleM
             myMap.setOnMapClickListener(this);
         myMap.clear();
         myMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-
         mydb = openOrCreateDatabase(DBNAME, Context.MODE_PRIVATE, null);
         Cursor allrows = mydb.rawQuery("SELECT * FROM " + TABLE, null);
         for (int i = 0;i<allrows.getCount();i++){
@@ -89,14 +92,18 @@ public class MainActivity extends Activity implements OnMapReadyCallback,GoogleM
             MarkerOptions marker = new MarkerOptions().position(new LatLng(Double.parseDouble(LATITUDE), Double.parseDouble(LONGITUDE))).title(NAME);
             marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
             myMap.addMarker(marker);
-
         }
+
 
     }
 
 
     public void startAnim(View view){
         Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade);
+        view.startAnimation(animation);
+    }
+    public void Rotate(View view){
+        Animation animation = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.move);
         view.startAnimation(animation);
     }
 

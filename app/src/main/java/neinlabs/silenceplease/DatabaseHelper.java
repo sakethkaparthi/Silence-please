@@ -8,13 +8,17 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.LinearLayout;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class DatabaseHelper extends Activity {
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-    LinearLayout Linear;
+public class DatabaseHelper extends Activity {
+    private ArrayAdapter<String> mForecastAdapter;
     SQLiteDatabase mydb;
     private static String DBNAME = "PERSONS.db";    // THIS IS THE SQLITE DATABASE FILE NAME.
     private static String TABLE = "MY_TABLE";       // THIS IS THE TABLE NAME
@@ -34,7 +38,7 @@ public class DatabaseHelper extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
-        Linear  = (LinearLayout)findViewById(R.id.linear);
+
         createTable();
         insertIntoTable(n,k,l);
         Toast.makeText(getApplicationContext(), "Showing table values after updation.", Toast.LENGTH_SHORT).show();
@@ -55,7 +59,7 @@ public class DatabaseHelper extends Activity {
         if (id == R.id.delete) {
             Toast.makeText(getApplicationContext(),"Deleting all locations",Toast.LENGTH_SHORT).show();
             dropTable();
-            Linear.removeAllViews();
+            mForecastAdapter.clear();
             showTableValues();
             return true;
         }
@@ -91,71 +95,34 @@ public class DatabaseHelper extends Activity {
     }
     // THIS FUNCTION SHOWS DATA FROM THE DATABASE
     public void showTableValues(){
-        try{
-            mydb = openOrCreateDatabase(DBNAME, Context.MODE_PRIVATE,null);
-            Cursor allrows  = mydb.rawQuery("SELECT * FROM "+  TABLE, null);
-            System.out.println("COUNT : " + allrows.getCount());
-            Integer cindex = allrows.getColumnIndex("NAME");
-            Integer cindex1 = allrows.getColumnIndex("LATITUDE");
-            Integer cindex2 = allrows.getColumnIndex("LONGITUDE");
 
-            TextView t = new TextView(this);
-            t.setText("========================================");
-            //Linear.removeAllViews();
-            Linear.addView(t);
+            String[] data = {
+                      };
+            List<String> weekForecast = new ArrayList<String>(Arrays.asList(data));
 
-            if(allrows.moveToFirst()){
-                do{
-                    LinearLayout id_row   = new LinearLayout(this);
-                    LinearLayout name_row = new LinearLayout(this);
-                    LinearLayout lat_row= new LinearLayout(this);
-                    LinearLayout lon_row= new LinearLayout(this);
-
-                    final TextView id_  = new TextView(this);
-                    final TextView name_ = new TextView(this);
-                    final TextView lat_ = new TextView(this);
-                    final TextView lon_ = new TextView(this);
-                    final TextView   sep  = new TextView(this);
-
-                    String ID = allrows.getString(0);
-                    String NAME= allrows.getString(1);
-                    String LATITUDE= allrows.getString(2);
-                    String LONGITUDE= allrows.getString(3);
-
-                    id_.setTextColor(Color.RED);
-                    id_.setPadding(20, 5, 0, 5);
-                    name_.setTextColor(Color.RED);
-                    name_.setPadding(20, 5, 0, 5);
-                    lat_.setTextColor(Color.RED);
-                    lat_.setPadding(20, 5, 0, 5);
-                    lon_.setTextColor(Color.RED);
-                    lon_.setPadding(20, 5, 0, 5);
-
-                    System.out.println("NAME " + allrows.getString(cindex) + " LATITUDE : "+ allrows.getString(cindex1)+ " LONGITUDE : "+ allrows.getString(cindex2));
-                    System.out.println("ID : "+ ID  + " || NAME " + NAME + "|| LATITUDE : "+ LATITUDE+"||LONGITUDE: "+LONGITUDE);
-
-                    id_.setText("ID : " + ID);
-                    id_row.addView(id_);
-                    Linear.addView(id_row);
-                    name_.setText("NAME : "+NAME);
-                    name_row.addView(name_);
-                    Linear.addView(name_row);
-                    lat_.setText("LATITUDE : " + LATITUDE);
-                    lat_row.addView(lat_);
-                    Linear.addView(lat_row);
-                    lon_.setText("LONGITUDE : " +LONGITUDE);
-                    lon_row.addView(lon_);
-                    Linear.addView(lon_row);
-                    sep.setText("---------------------------------------------------------------");
-                    Linear.addView(sep);
-                }
-                while(allrows.moveToNext());
-            }
-            mydb.close();
-        }catch(Exception e){
-            Toast.makeText(getApplicationContext(), "Error encountered.", Toast.LENGTH_LONG);
+            // Now that we have some dummy forecast data, create an ArrayAdapter.
+            // The ArrayAdapter will take data from a source (like our dummy forecast) and
+            // use it to populate the ListView it's attached to.
+            mForecastAdapter =
+                    new ArrayAdapter<String>(
+                            getApplicationContext(), // The current context (this activity)
+                            R.layout.list_item, // The name of the layout ID.
+                            R.id.titleTextview, // The ID of the textview to populate.
+                            weekForecast);
+            ListView listView = (ListView) findViewById(R.id.listview_forecast);
+            listView.setAdapter(mForecastAdapter);
+            mydb = openOrCreateDatabase(DBNAME, Context.MODE_PRIVATE, null);
+            Cursor allrows = mydb.rawQuery("SELECT * FROM " + TABLE, null);
+        for (int i = 0;i<allrows.getCount();i++){
+            allrows.moveToPosition(i);
+            String NAME = allrows.getString(1);
+            mForecastAdapter.add(NAME);
         }
+
+            mydb.close();
     }
+
+
     // THIS FUNCTION UPDATES THE DATABASE ACCORDING TO THE CONDITION
     public void updateTable(){
         try{
