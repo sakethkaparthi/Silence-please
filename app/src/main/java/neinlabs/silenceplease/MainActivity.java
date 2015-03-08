@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -33,6 +35,14 @@ public class MainActivity extends Activity implements OnMapReadyCallback,GoogleM
         MapFragment mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        FloatingActionButton fb = (FloatingActionButton)findViewById(R.id.normal_plus);
+        final EditText et = (EditText)findViewById(R.id.et);
+        fb.setAlpha(0f);
+        et.setAlpha(0f);
+        startAnim(fb);
+        startAnim(et);
+        fb.setAlpha(1f);
+        et.setAlpha(1f);
     }
      @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -68,6 +78,7 @@ public class MainActivity extends Activity implements OnMapReadyCallback,GoogleM
             myMap.setOnMapClickListener(this);
         myMap.clear();
         myMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+
         mydb = openOrCreateDatabase(DBNAME, Context.MODE_PRIVATE, null);
         Cursor allrows = mydb.rawQuery("SELECT * FROM " + TABLE, null);
         for (int i = 0;i<allrows.getCount();i++){
@@ -78,14 +89,23 @@ public class MainActivity extends Activity implements OnMapReadyCallback,GoogleM
             MarkerOptions marker = new MarkerOptions().position(new LatLng(Double.parseDouble(LATITUDE), Double.parseDouble(LONGITUDE))).title(NAME);
             marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
             myMap.addMarker(marker);
+
         }
+
     }
+
+
+    public void startAnim(View view){
+        Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade);
+        view.startAnimation(animation);
+    }
+
     @Override
     public void onMapClick(final LatLng latLng) {
-
+        FloatingActionButton fb = (FloatingActionButton)findViewById(R.id.normal_plus);
         final EditText et = (EditText)findViewById(R.id.et);
         et.setVisibility(View.VISIBLE);
-        FloatingActionButton fb = (FloatingActionButton)findViewById(R.id.normal_plus);
+        startAnim(et);
         fb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
