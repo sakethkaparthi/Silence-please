@@ -2,11 +2,36 @@
 <RelativeLayout
     android:layout_height="fill_parent"
     android:layout_width="fill_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fab="http://schemas.android.com/apk/res-auto">
 
 <fragment xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/map"
     android:layout_width="fill_parent"
     android:layout_height="400dp"
     android:name="com.google.android.gms.maps.MapFragment"/>
+    <neinlabs.silenceplease.buttons.AddFloatingActionButton
+        android:id="@+id/normal_plus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/map"
+        fab:fab_plusIconColor="@color/half_black"
+        fab:fab_colorNormal="@color/blue"
+        fab:fab_colorPressed="@color/blue_pressed"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="16dp"
+        android:layout_marginRight="16dp"
+        />
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/normal_plus">
+        <EditText
+            android:id="@+id/et"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            />
+        </LinearLayout>
 </RelativeLayout>
