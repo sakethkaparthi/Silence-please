@@ -44,9 +44,6 @@ public class MainActivity extends Activity implements OnMapReadyCallback,GoogleM
         startAnim(et);
         fb.setAlpha(1f);
         et.setAlpha(1f);
-
-
-
     }
      @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -110,6 +107,20 @@ public class MainActivity extends Activity implements OnMapReadyCallback,GoogleM
 
     @Override
     public void onMapClick(final LatLng latLng) {
+        myMap.clear();
+        MarkerOptions marker = new MarkerOptions().position(latLng).title("New place");
+        myMap.addMarker(marker);
+        mydb = openOrCreateDatabase(DBNAME, Context.MODE_PRIVATE, null);
+        Cursor allrows = mydb.rawQuery("SELECT * FROM " + TABLE, null);
+        for (int i = 0;i<allrows.getCount();i++){
+            allrows.moveToPosition(i);
+            String NAME = allrows.getString(1);
+            String LATITUDE = allrows.getString(2);
+            String LONGITUDE = allrows.getString(3);
+            MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(Double.parseDouble(LATITUDE), Double.parseDouble(LONGITUDE))).title(NAME);
+            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+            myMap.addMarker(markerOptions);
+        }
         FloatingActionButton fb = (FloatingActionButton)findViewById(R.id.normal_plus);
         final EditText et = (EditText)findViewById(R.id.et);
         et.setVisibility(View.VISIBLE);
