@@ -100,28 +100,26 @@ public class MainActivity extends Activity implements OnMapReadyCallback,GoogleM
         myMap.setOnMapClickListener(this);
         myMap.clear();
         myMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-        mydb = openOrCreateDatabase(DBNAME, Context.MODE_PRIVATE, null);
-        Cursor allrows = mydb.rawQuery("SELECT * FROM " + TABLE, null);
-        for (int i = 0;i<allrows.getCount();i++){
+        addMarkers();
+    }
+public void addMarkers(){
+    mydb = openOrCreateDatabase(DBNAME, Context.MODE_PRIVATE, null);
+    Cursor allrows = mydb.rawQuery("SELECT * FROM " + TABLE, null);
+    if(allrows!=null) {
+        for (int i = 0; i < allrows.getCount(); i++) {
             allrows.moveToPosition(i);
             String NAME = allrows.getString(1);
             String LATITUDE = allrows.getString(2);
             String LONGITUDE = allrows.getString(3);
-            MarkerOptions marker = new MarkerOptions().position(new LatLng(Double.parseDouble(LATITUDE), Double.parseDouble(LONGITUDE))).title(NAME);
-            marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-            myMap.addMarker(marker);
+            MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(Double.parseDouble(LATITUDE), Double.parseDouble(LONGITUDE))).title(NAME);
+            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+            myMap.addMarker(markerOptions);
         }
-
-
     }
-
+}
 
     public void startAnim(View view){
         Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade);
-        view.startAnimation(animation);
-    }
-    public void Rotate(View view){
-        Animation animation = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.move);
         view.startAnimation(animation);
     }
 
@@ -132,17 +130,7 @@ public class MainActivity extends Activity implements OnMapReadyCallback,GoogleM
         myMap.clear();
         MarkerOptions marker = new MarkerOptions().position(latLng).title("New place");
         myMap.addMarker(marker);
-        mydb = openOrCreateDatabase(DBNAME, Context.MODE_PRIVATE, null);
-        Cursor allrows = mydb.rawQuery("SELECT * FROM " + TABLE, null);
-        for (int i = 0;i<allrows.getCount();i++){
-            allrows.moveToPosition(i);
-            String NAME = allrows.getString(1);
-            String LATITUDE = allrows.getString(2);
-            String LONGITUDE = allrows.getString(3);
-            MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(Double.parseDouble(LATITUDE), Double.parseDouble(LONGITUDE))).title(NAME);
-            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-            myMap.addMarker(markerOptions);
-        }
+        addMarkers();
         FloatingActionButton fb = (FloatingActionButton)findViewById(R.id.normal_plus);
         final EditText et = (EditText)findViewById(R.id.et);
         et.setVisibility(View.VISIBLE);
