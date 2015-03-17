@@ -42,7 +42,7 @@ public class MainActivity extends Activity implements OnMapReadyCallback,GoogleM
 
     GoogleMap myMap;
     SQLiteDatabase mydb;
-    Double distance;
+    private static Double distance;
     private AudioManager myAudioManager;
     private static String DBNAME = "PERSONS.db";    // THIS IS THE SQLITE DATABASE FILE NAME.
     private static String TABLE = "MY_TABLE";       // THIS IS THE TABLE NAME
@@ -72,10 +72,11 @@ public class MainActivity extends Activity implements OnMapReadyCallback,GoogleM
          myAudioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
          if(d<100.0){
              myAudioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
-             }else{
-             myAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
              }
          }
+    public void SetDistance(Double d){
+        distance = d;
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -117,6 +118,43 @@ public void addMarkers(){
         }
     }
 }
+    Cursor row;
+    public void checkMarkerRanges(){
+        mydb = openOrCreateDatabase(DBNAME, Context.MODE_PRIVATE, null);
+        Cursor allrows = mydb.rawQuery("SELECT * FROM " + TABLE, null);
+        if(allrows!=null) {
+           // for(int k=allrows.getCount();k>=0;k--){
+          //  for (int i = 0; i <allrows.getCount()-k; i++) {
+            //    allrows.moveToPosition(i);
+              //  String name= allrows.getString(1);
+//               String LATITUDE = allrows.getString(2);
+  //              String LONGITUDE = allrows.getString(3);
+    //            FetchWeatherTask weatherTask = new FetchWeatherTask();
+      //          android.location.Location lt = myMap.getMyLocation();
+        //        String latlng = String.valueOf(lt.getLatitude()) + "," + String.valueOf(lt.getLongitude());
+          //      format = LATITUDE + "," + LONGITUDE;
+            //    Log.d("checkMarker",latlng);
+              //  weatherTask.execute(latlng);
+           //     Log.d("checkMarker","distance from "+ name+ " is :"+distance);
+           // }
+          //  }
+            for(int k =1 ; k<= allrows.getCount();k++){
+            row = mydb.rawQuery("SELECT * FROM "+TABLE+" WHERE ID=="+k,null);
+            row.moveToFirst();
+                String name= row.getString(1);
+                String LATITUDE = row.getString(2);
+                String LONGITUDE = row.getString(3);
+                FetchWeatherTask weatherTask = new FetchWeatherTask();
+                android.location.Location lt = myMap.getMyLocation();
+                String latlng = String.valueOf(lt.getLatitude()) + "," + String.valueOf(lt.getLongitude());
+                format = LATITUDE + "," + LONGITUDE;
+                Log.d("checkMarker",latlng);
+                weatherTask.execute(latlng);
+                Log.d("checkMarker","lel distance from "+ name+ " is :"+distance);
+
+        }
+    }
+    }
 
     public void startAnim(View view){
         Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade);
@@ -128,8 +166,9 @@ public void addMarkers(){
     @Override
     public void onMapClick(final LatLng latLng) {
         myMap.clear();
-        MarkerOptions marker = new MarkerOptions().position(latLng).title("New place");
-        myMap.addMarker(marker);
+        checkMarkerRanges();
+        //MarkerOptions marker = new MarkerOptions().position(latLng).title("New place");
+        //myMap.addMarker(marker);
         addMarkers();
         FloatingActionButton fb = (FloatingActionButton)findViewById(R.id.normal_plus);
         final EditText et = (EditText)findViewById(R.id.et);
@@ -145,12 +184,12 @@ public void addMarkers(){
                 startActivity(new Intent(MainActivity.this, DatabaseHelper.class));
             }
         });
-        FetchWeatherTask weatherTask = new FetchWeatherTask();
-         android.location.Location lt = myMap.getMyLocation();
-         String latlng = String.valueOf(lt.getLatitude()) + "," + String.valueOf(lt.getLongitude());
-         format = String.valueOf(latLng.latitude) + "," + String.valueOf(latLng.longitude);
-         weatherTask.execute(latlng);
-         Log.d("ok","from mapclick " + String.valueOf(distance));
+        //FetchWeatherTask weatherTask = new FetchWeatherTask();
+         //android.location.Location lt = myMap.getMyLocation();
+         //String latlng = String.valueOf(lt.getLatitude()) + "," + String.valueOf(lt.getLongitude());
+         //format = String.valueOf(latLng.latitude) + "," + String.valueOf(latLng.longitude);
+         //weatherTask.execute(latlng);
+         //Log.d("ok","from mapclick " + String.valueOf(distance));
        }
 
     public class FetchWeatherTask extends AsyncTask<String, Void, String> {
@@ -257,7 +296,8 @@ public void addMarkers(){
 
                  @Override
          protected void onPostExecute(String result) {
-             CheckIfInRange(Double.parseDouble(result));
+                CheckIfInRange(Double.parseDouble(result));
+                SetDistance(Double.parseDouble(result));
              }
 
            }
