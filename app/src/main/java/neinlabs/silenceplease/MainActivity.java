@@ -9,6 +9,7 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -39,7 +40,7 @@ import neinlabs.silenceplease.buttons.FloatingActionButton;
 
 
 public class MainActivity extends Activity implements OnMapReadyCallback,GoogleMap.OnMapClickListener{
-
+    Handler handler;
     GoogleMap myMap;
     SQLiteDatabase mydb;
     private static Double distance;
@@ -61,6 +62,7 @@ public class MainActivity extends Activity implements OnMapReadyCallback,GoogleM
         startAnim(et);
         fb.setAlpha(1f);
         et.setAlpha(1f);
+        handler = new Handler();
     }
      @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -133,14 +135,19 @@ public void addMarkers(){
                 android.location.Location lt = myMap.getMyLocation();
                 String latlng = String.valueOf(lt.getLatitude()) + "," + String.valueOf(lt.getLongitude());
                 format = LATITUDE + "," + LONGITUDE;
-                Log.d("checkMarker",latlng);
-                weatherTask.execute(latlng);
-                Log.d("checkMarker","lel distance from "+ name+ " is :"+distance);
+                Log.d("checkMarker", latlng);
+                weatherTask.execute(latlng, format);
 
         }
     }
     }
-
+    private Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            checkMarkerRanges();
+            handler.postDelayed(runnable,2000);
+        }
+    };
     public void startAnim(View view){
         Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade);
         view.startAnimation(animation);
@@ -151,7 +158,7 @@ public void addMarkers(){
     @Override
     public void onMapClick(final LatLng latLng) {
         myMap.clear();
-        checkMarkerRanges();
+        handler.post(runnable);
         MarkerOptions marker = new MarkerOptions().position(latLng).title("New place");
         myMap.addMarker(marker);
         addMarkers();
@@ -214,7 +221,7 @@ public void addMarkers(){
 
                         Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
                          .appendQueryParameter(QUERY_PARAM, params[0])
-                        .appendQueryParameter(FORMAT_PARAM,     format)
+                        .appendQueryParameter(FORMAT_PARAM, params[1])
                         .build();
 
                       URL url = new URL(builtUri.toString());
