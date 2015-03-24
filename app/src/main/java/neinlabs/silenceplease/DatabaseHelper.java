@@ -1,20 +1,22 @@
 package neinlabs.silenceplease;
 
-import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class DatabaseHelper extends Activity {
+public class DatabaseHelper extends ActionBarActivity {
     RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -43,6 +45,17 @@ public class DatabaseHelper extends Activity {
         insertIntoTable(n,k,l);
         Toast.makeText(getApplicationContext(), "Showing table values after updation.", Toast.LENGTH_SHORT).show();
         showTableValues();
+        mRecyclerView = (RecyclerView) findViewById(R.id.list);
+        mRecyclerView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                TextView t  = (TextView)v.findViewById(R.id.countryName);
+                list.remove(t.getText().toString());
+                mAdapter = new CardViewDataAdapter(list);
+                mAdapter.notifyDataSetChanged();
+                return true;
+            }
+        });
     }
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -91,14 +104,6 @@ public class DatabaseHelper extends Activity {
     }
     // THIS FUNCTION SHOWS DATA FROM THE DATABASE
     public void showTableValues(){
-
-
-
-
-            // Now that we have some dummy forecast data, create an ArrayAdapter.
-            // The ArrayAdapter will take data from a source (like our dummy forecast) and
-            // use it to populate the ListView it's attached to.
-
         mRecyclerView = (RecyclerView) findViewById(R.id.list);
 
         // getSupportActionBar().setIcon(R.drawable.ic_launcher);

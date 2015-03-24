@@ -1,6 +1,5 @@
 package neinlabs.silenceplease;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -10,6 +9,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -39,7 +39,7 @@ import java.net.URL;
 import neinlabs.silenceplease.buttons.FloatingActionButton;
 
 
-public class MainActivity extends Activity implements OnMapReadyCallback,GoogleMap.OnMapClickListener{
+public class MainActivity extends ActionBarActivity implements OnMapReadyCallback,GoogleMap.OnMapClickListener{
     Handler handler;
     GoogleMap myMap;
     SQLiteDatabase mydb;
@@ -103,7 +103,6 @@ public class MainActivity extends Activity implements OnMapReadyCallback,GoogleM
         myMap.setOnMapClickListener(this);
         myMap.clear();
         myMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-        addMarkers();
     }
 public void addMarkers(){
     mydb = openOrCreateDatabase(DBNAME, Context.MODE_PRIVATE, null);
@@ -161,7 +160,6 @@ public void addMarkers(){
         handler.post(runnable);
         MarkerOptions marker = new MarkerOptions().position(latLng).title("New place");
         myMap.addMarker(marker);
-        addMarkers();
         FloatingActionButton fb = (FloatingActionButton)findViewById(R.id.normal_plus);
         final EditText et = (EditText)findViewById(R.id.et);
         et.setVisibility(View.VISIBLE);

@@ -1,10 +1,7 @@
 <resources>
 
-    <style name="MyCustomTheme" parent="@android:style/Theme.Holo.Light">
-        <item name="android:actionBarStyle">@style/MyActionBarTheme</item>
+    <style name="MyCustomTheme" parent="Theme.AppCompat.Light">
+        <item name="colorPrimary">#03A9F4</item>
     </style>
 
-    <style name="MyActionBarTheme" parent="@android:style/Widget.Holo.Light.ActionBar">
-        <item name="android:background">#03A9F4</item>
-    </style>
 </resources>
