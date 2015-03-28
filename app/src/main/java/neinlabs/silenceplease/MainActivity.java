@@ -2,8 +2,6 @@ package neinlabs.silenceplease;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -35,18 +33,17 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 
+import neinlabs.silenceplease.Database.MySQLiteHelper;
 import neinlabs.silenceplease.buttons.FloatingActionButton;
 
 
 public class MainActivity extends ActionBarActivity implements OnMapReadyCallback,GoogleMap.OnMapClickListener{
     Handler handler;
     GoogleMap myMap;
-    SQLiteDatabase mydb;
-    private static Double distance;
+    MySQLiteHelper mDbHelper;
     private AudioManager myAudioManager;
-    private static String DBNAME = "PERSONS.db";    // THIS IS THE SQLITE DATABASE FILE NAME.
-    private static String TABLE = "MY_TABLE";       // THIS IS THE TABLE NAME
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +53,7 @@ public class MainActivity extends ActionBarActivity implements OnMapReadyCallbac
         mapFragment.getMapAsync(this);
         FloatingActionButton fb = (FloatingActionButton)findViewById(R.id.normal_plus);
         final EditText et = (EditText)findViewById(R.id.et);
+        mDbHelper = new MySQLiteHelper(this);
         fb.setAlpha(0f);
         et.setAlpha(0f);
         startAnim(fb);
@@ -76,9 +74,7 @@ public class MainActivity extends ActionBarActivity implements OnMapReadyCallbac
              myAudioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
              }
          }
-    public void SetDistance(Double d){
-        distance = d;
-    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -90,11 +86,12 @@ public class MainActivity extends ActionBarActivity implements OnMapReadyCallbac
         if (id == R.id.action_settings) {
             return true;
         }
+        if(id==R.id.Saved_locs){
+            startActivity(new Intent(MainActivity.this,SavedLocations.class));
+        }
 
         return super.onOptionsItemSelected(item);
     }
-
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         googleMap.setMyLocationEnabled(true);
@@ -103,60 +100,56 @@ public class MainActivity extends ActionBarActivity implements OnMapReadyCallbac
         myMap.setOnMapClickListener(this);
         myMap.clear();
         myMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+        addMarkers();
     }
-public void addMarkers(){
-    mydb = openOrCreateDatabase(DBNAME, Context.MODE_PRIVATE, null);
-    Cursor allrows = mydb.rawQuery("SELECT * FROM " + TABLE, null);
-    if(allrows!=null) {
-        for (int i = 0; i < allrows.getCount(); i++) {
-            allrows.moveToPosition(i);
-            String NAME = allrows.getString(1);
-            String LATITUDE = allrows.getString(2);
-            String LONGITUDE = allrows.getString(3);
-            MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(Double.parseDouble(LATITUDE), Double.parseDouble(LONGITUDE))).title(NAME);
-            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-            myMap.addMarker(markerOptions);
-        }
-    }
-}
-    Cursor row;
-    public void checkMarkerRanges(){
-        mydb = openOrCreateDatabase(DBNAME, Context.MODE_PRIVATE, null);
-        Cursor allrows = mydb.rawQuery("SELECT * FROM " + TABLE, null);
-        if(allrows!=null) {
-            for(int k =1 ; k<= allrows.getCount();k++){
-            row = mydb.rawQuery("SELECT * FROM "+TABLE+" WHERE ID=="+k,null);
-            row.moveToFirst();
-                String name= row.getString(1);
-                String LATITUDE = row.getString(2);
-                String LONGITUDE = row.getString(3);
-                FetchWeatherTask weatherTask = new FetchWeatherTask();
-                android.location.Location lt = myMap.getMyLocation();
-                String latlng = String.valueOf(lt.getLatitude()) + "," + String.valueOf(lt.getLongitude());
-                format = LATITUDE + "," + LONGITUDE;
-                Log.d("checkMarker", latlng);
-                weatherTask.execute(latlng, format);
+ public void addMarkers(){
+     List<Location> list = mDbHelper.getAllComments();
+   if(list!=null) {
+       for (int i = 0; i < list.size(); i++) {
+           String NAME = list.get(i).getName();
+           String LATITUDE = list.get(i).getLat();
+           String LONGITUDE = list.get(i).getLon();
+           MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(Double.parseDouble(LATITUDE), Double.parseDouble(LONGITUDE))).title(NAME);
+           markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+           myMap.addMarker(markerOptions);
+       }
+   }
+ }
 
-        }
-    }
-    }
-    private Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-            checkMarkerRanges();
-            handler.postDelayed(runnable,2000);
-        }
-    };
+
+  public void checkMarkerRanges(){
+      List<Location> list = mDbHelper.getAllComments();
+      if(list!=null) {
+          for(int k =0 ; k<list.size();k++){
+              String LATITUDE = list.get(k).getLat();
+              String LONGITUDE = list.get(k).getLon();
+              FetchWeatherTask weatherTask = new FetchWeatherTask();
+              android.location.Location lt = myMap.getMyLocation();
+              String latlng = String.valueOf(lt.getLatitude()) + "," + String.valueOf(lt.getLongitude());
+              format = LATITUDE + "," + LONGITUDE;
+              Log.d("checkMarker", latlng);
+              weatherTask.execute(latlng, format);
+      }
+  }
+  }
+   private Runnable runnable = new Runnable() {
+       @Override
+       public void run() {
+           checkMarkerRanges();
+           handler.postDelayed(runnable,2000);
+       }
+   };
     public void startAnim(View view){
         Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade);
         view.startAnimation(animation);
     }
 
     String format = null;
-
+    SavedLocations sl = new SavedLocations();
     @Override
     public void onMapClick(final LatLng latLng) {
         myMap.clear();
+        addMarkers();
         handler.post(runnable);
         MarkerOptions marker = new MarkerOptions().position(latLng).title("New place");
         myMap.addMarker(marker);
@@ -164,17 +157,23 @@ public void addMarkers(){
         final EditText et = (EditText)findViewById(R.id.et);
         et.setVisibility(View.VISIBLE);
         startAnim(et);
+        final Location location = new Location();
+
         fb.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DatabaseHelper k = new DatabaseHelper();
-                k.setk(String.valueOf(latLng.latitude));
-                k.setl(String.valueOf(latLng.longitude));
-                k.setn(et.getText().toString());
-                startActivity(new Intent(MainActivity.this, DatabaseHelper.class));
+        @Override
+         public void onClick(View v) {
+            try{
+            location.setId(sl.getSize()+1);}catch (Exception e){
+                e.printStackTrace();
             }
-        });
-       }
+            location.setName(et.getText().toString());
+            location.setLat(String.valueOf(latLng.latitude));
+            location.setLon(String.valueOf(latLng.longitude));
+            mDbHelper.createComment(location);
+            startActivity(new Intent(MainActivity.this,SavedLocations.class));
+           }
+       });
+      }
 
     public class FetchWeatherTask extends AsyncTask<String, Void, String> {
 
@@ -281,7 +280,6 @@ public void addMarkers(){
                  @Override
          protected void onPostExecute(String result) {
                 CheckIfInRange(Double.parseDouble(result));
-                SetDistance(Double.parseDouble(result));
              }
 
            }

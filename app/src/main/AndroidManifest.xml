@@ -39,7 +39,7 @@
             android:value="AIzaSyCSZlEYuXA8IO0nY5_PhjsDEjrZjfH9Yf8" />
 
         <activity
-            android:name=".DatabaseHelper"
+            android:name=".SavedLocations"
             android:label="Saved locations" >
         </activity>
     </application>
