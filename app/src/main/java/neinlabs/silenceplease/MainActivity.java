@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.EditText;
+import android.widget.ListView;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -35,12 +36,15 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 import neinlabs.silenceplease.Database.MySQLiteHelper;
 import neinlabs.silenceplease.buttons.FloatingActionButton;
 
 
 public class MainActivity extends ActionBarActivity implements OnMapReadyCallback,GoogleMap.OnMapClickListener{
     Handler handler;
+    ListView list;
     GoogleMap myMap;
     MySQLiteHelper mDbHelper;
     private AudioManager myAudioManager;
@@ -61,6 +65,9 @@ public class MainActivity extends ActionBarActivity implements OnMapReadyCallbac
         fb.setAlpha(1f);
         et.setAlpha(1f);
         handler = new Handler();
+        if(!Potato.potate().getUtils().isInternetConnected(this)){
+            Crouton.showText(MainActivity.this,"No Internet Connection", Style.ALERT);
+        }
     }
      @Override
     public boolean onCreateOptionsMenu(Menu menu) {

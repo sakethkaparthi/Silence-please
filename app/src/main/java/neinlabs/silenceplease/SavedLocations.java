@@ -4,12 +4,16 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 import neinlabs.silenceplease.Database.MySQLiteHelper;
 
 public class SavedLocations extends ActionBarActivity {
@@ -32,6 +36,13 @@ public class SavedLocations extends ActionBarActivity {
         CustomListViewValuesArr= mDbHelper.getAllComments();
         adapter =new CustomAdapter(this,CustomListViewValuesArr,getResources());
         listView.setAdapter(adapter);
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                onItemClick(position);
+                return true;
+            }
+        });
     }
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -66,6 +77,7 @@ public class SavedLocations extends ActionBarActivity {
             mDbHelper.deleteComment(tempValues);
             CustomListViewValuesArr.remove(mPosition);
             adapter.notifyDataSetChanged();
+            Crouton.showText(SavedLocations.this, "Location Deleted", Style.CONFIRM);
         }catch (Exception e){
             e.printStackTrace();
         }

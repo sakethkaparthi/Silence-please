@@ -3,7 +3,6 @@ package neinlabs.silenceplease;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +14,7 @@ import java.util.List;
 /**
  * Created by Saketh on 27-03-2015.
  */
-public class CustomAdapter extends BaseAdapter   implements View.OnClickListener {
+public class CustomAdapter extends BaseAdapter {
 
     /*********** Declare Used Variables *********/
     private Activity activity;
@@ -96,31 +95,9 @@ public class CustomAdapter extends BaseAdapter   implements View.OnClickListener
             /************  Set Model values in Holder elements ***********/
 
             holder.name.setText( tempValues.getName() );
-            vi.setOnClickListener( new OnItemClickListener( position ));
         }
         return vi;
     }
 
-    @Override
-    public void onClick(View v) {
-        Log.v("CustomAdapter", "=====Row button clicked=====");
-    }
-
-    /********* Called when Item click in ListView ************/
-    private class OnItemClickListener  implements View.OnClickListener {
-        private int mPosition;
-
-        OnItemClickListener(int position){
-            mPosition = position;
-        }
-
-        @Override
-        public void onClick(View arg0) {
-            SavedLocations sct = (SavedLocations)activity;
-
-            /****  Call  onItemClick Method inside CustomListViewAndroidExample Class ( See Below )****/
-            sct.onItemClick(mPosition);
-        }
-    }
 
 }
