@@ -7,11 +7,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 import neinlabs.silenceplease.Database.MySQLiteHelper;
@@ -38,8 +38,24 @@ public class SavedLocations extends ActionBarActivity {
         listView.setAdapter(adapter);
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                onItemClick(position);
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+                new SweetAlertDialog(SavedLocations.this, SweetAlertDialog.WARNING_TYPE)
+                        .setTitleText("Are you sure?")
+                        .setContentText("Won't be able to recover this Data!")
+                        .setConfirmText("Yes,delete it!")
+                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sDialog) {
+                                onItemClick(position);
+                                sDialog
+                                        .setTitleText("Deleted!")
+                                        .setContentText("Your Loacation has been deleted!")
+                                        .setConfirmText("OK")
+                                        .setConfirmClickListener(null)
+                                        .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
+                            }
+                        })
+                        .show();
                 return true;
             }
         });
@@ -57,9 +73,25 @@ public class SavedLocations extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.delete) {
-            Toast.makeText(getApplicationContext(),"Deleting all locations",Toast.LENGTH_SHORT).show();
-            CustomListViewValuesArr.clear();
-            showTableValues();
+            new SweetAlertDialog(SavedLocations.this, SweetAlertDialog.WARNING_TYPE)
+                    .setTitleText("Are you sure?")
+                    .setContentText("Won't be able to recover this Data!")
+                    .setConfirmText("Yes,delete it!")
+                    .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                        @Override
+                        public void onClick(SweetAlertDialog sDialog) {
+                            CustomListViewValuesArr.clear();
+                            showTableValues();
+                            sDialog
+                                    .setTitleText("Deleted!")
+                                    .setContentText("Your Loacations have been deleted!")
+                                    .setConfirmText("OK")
+                                    .setConfirmClickListener(null)
+                                    .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
+                        }
+                    })
+                    .show();
+
             return true;
         }
 
