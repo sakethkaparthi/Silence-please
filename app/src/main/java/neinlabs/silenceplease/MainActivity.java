@@ -157,7 +157,9 @@ public class MainActivity extends ActionBarActivity implements OnMapReadyCallbac
     public void onMapClick(final LatLng latLng) {
         myMap.clear();
         addMarkers();
+        if(Potato.potate().getUtils().isInternetConnected(this)){
         handler.post(runnable);
+        }
         MarkerOptions marker = new MarkerOptions().position(latLng).title("New place");
         myMap.addMarker(marker);
         FloatingActionButton fb = (FloatingActionButton)findViewById(R.id.normal_plus);

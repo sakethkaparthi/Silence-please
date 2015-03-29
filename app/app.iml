@@ -91,6 +91,8 @@
     <orderEntry type="library" exported="" name="support-annotations-21.0.3" level="project" />
     <orderEntry type="library" exported="" name="crouton" level="project" />
     <orderEntry type="library" exported="" name="play-services-6.5.87" level="project" />
+    <orderEntry type="library" exported="" name="androidbootstrap-1.2.1" level="project" />
+    <orderEntry type="library" exported="" name="dialogplus-1.4" level="project" />
     <orderEntry type="library" exported="" name="cardview-v7-21.0.3" level="project" />
   </component>
 </module>
