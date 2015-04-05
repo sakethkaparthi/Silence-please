@@ -1,11 +1,13 @@
 package neinlabs.silenceplease;
 
+import android.app.Activity;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -16,7 +18,7 @@ import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 import neinlabs.silenceplease.Database.MySQLiteHelper;
 
-public class SavedLocations extends ActionBarActivity {
+public class SavedLocations extends Activity {
     public static CustomAdapter adapter;
     public static ListView listView;
     public static MySQLiteHelper mDbHelper;
@@ -27,6 +29,7 @@ public class SavedLocations extends ActionBarActivity {
     public int getSize(){
         return CustomListViewValuesArr.size();
     }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,6 +62,11 @@ public class SavedLocations extends ActionBarActivity {
                 return true;
             }
         });
+        ImageView imageView = (ImageView)findViewById(R.id.imageView);
+
+        imageView.setImageDrawable(Drawable.createFromPath(""));
+
+
     }
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.

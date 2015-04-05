@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/SilencePlease.iml" filepath="$PROJECT_DIR$/SilencePlease.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/residemenu-1.6/residemenu-1.6.iml" filepath="$PROJECT_DIR$/residemenu-1.6/residemenu-1.6.iml" />
     </modules>
   </component>
 </project>

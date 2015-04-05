@@ -1,5 +1,6 @@
 package neinlabs.silenceplease;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
@@ -7,7 +8,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,7 +15,6 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.EditText;
-import android.widget.ListView;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -42,11 +41,11 @@ import neinlabs.silenceplease.Database.MySQLiteHelper;
 import neinlabs.silenceplease.buttons.FloatingActionButton;
 
 
-public class MainActivity extends ActionBarActivity implements OnMapReadyCallback,GoogleMap.OnMapClickListener{
+public class MainActivity extends Activity implements OnMapReadyCallback,GoogleMap.OnMapClickListener{
     Handler handler;
-    ListView list;
     GoogleMap myMap;
     MySQLiteHelper mDbHelper;
+    ResideMenu resideMenu;
     private AudioManager myAudioManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +67,31 @@ public class MainActivity extends ActionBarActivity implements OnMapReadyCallbac
         if(!Potato.potate().getUtils().isInternetConnected(this)){
             Crouton.showText(MainActivity.this,"No Internet Connection", Style.ALERT);
         }
+        resideMenu = new ResideMenu(this);
+        resideMenu.setBackground(R.drawable.menu_background);
+        resideMenu.attachToActivity(this);
+        resideMenu.addIgnoredView(mapFragment.getView());
+        // create menu items;
+        String titles[] = { "Home", "Saved Locations", "Calendar", "Settings" };
+        int icon[] = { R.drawable.icon_home, R.drawable.icon_profile, R.drawable.icon_calendar, R.drawable.icon_settings };
+
+        for (int i = 0; i < titles.length; i++){
+            final ResideMenuItem item = new ResideMenuItem(this, icon[i], titles[i]);
+            resideMenu.addMenuItem(item,  ResideMenu.DIRECTION_LEFT); // or  ResideMenu.DIRECTION_RIGHT
+            item.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(item.getTitle()=="Saved Locations"){
+                        startActivity(new Intent(MainActivity.this,SavedLocations.class));
+                    }
+                    if(item.getTitle()=="Settings"){
+                        startActivity(new Intent(MainActivity.this,SettingsActivity.class));
+                    }
+                }
+            });
+        }
+        Intent intent = new Intent(MainActivity.this,SavedLocations.class);
+        Potato.potate().getNotifications().showNotificationDefaultSound("ok","no",R.drawable.ic_add,intent,MainActivity.this);
     }
      @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -91,6 +115,7 @@ public class MainActivity extends ActionBarActivity implements OnMapReadyCallbac
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            startActivity(new Intent(MainActivity.this,SettingsActivity.class));
             return true;
         }
         if(id==R.id.Saved_locs){
@@ -183,7 +208,6 @@ public class MainActivity extends ActionBarActivity implements OnMapReadyCallbac
            }
        });
       }
-
     public class FetchWeatherTask extends AsyncTask<String, Void, String> {
 
                  private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
