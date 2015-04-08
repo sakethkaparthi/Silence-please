@@ -1,4 +1,4 @@
-package neinlabs.silenceplease.buttons;
+package neinlabs.silenceplease.Utils.buttons;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;

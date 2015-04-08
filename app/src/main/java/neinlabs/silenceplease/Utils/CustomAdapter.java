@@ -1,4 +1,4 @@
-package neinlabs.silenceplease;
+package neinlabs.silenceplease.Utils;
 
 import android.app.Activity;
 import android.content.Context;
@@ -10,6 +10,8 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import java.util.List;
+
+import neinlabs.silenceplease.R;
 
 /**
  * Created by Saketh on 27-03-2015.

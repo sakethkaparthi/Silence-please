@@ -1,4 +1,4 @@
-package neinlabs.silenceplease;
+package neinlabs.silenceplease.Utils;
 
 /*
  * Developer: chipset

@@ -1,4 +1,4 @@
-package neinlabs.silenceplease;
+package neinlabs.silenceplease.Utils;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -15,6 +15,8 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.widget.EditText;
+
+import neinlabs.silenceplease.R;
 
 /**
  * Created by IntelliJ IDEA.

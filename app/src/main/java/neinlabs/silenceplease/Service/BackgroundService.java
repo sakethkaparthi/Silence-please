@@ -1,0 +1,299 @@
+package neinlabs.silenceplease.Service;
+
+import android.app.IntentService;
+import android.content.Context;
+import android.content.Intent;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.media.AudioManager;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.util.Log;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import neinlabs.silenceplease.Database.MySQLiteHelper;
+import neinlabs.silenceplease.Location;
+
+/**
+ * Created by Saketh on 05-04-2015.
+ */
+public class BackgroundService extends IntentService {
+    static List<Location> list;
+    MySQLiteHelper mySQLiteHelper;  ;
+    AudioManager myAudioManager;
+    public BackgroundService() {
+        // Used to name the worker thread, important only for debugging.
+        super("test-service");
+    }
+
+    @Override
+    protected void onHandleIntent(Intent intent) {
+        mySQLiteHelper = new MySQLiteHelper(getApplicationContext());
+        list=mySQLiteHelper.getAllComments();
+        //Log.d("service", "start");
+        MyLocation myLocation = new MyLocation();
+        MyLocation.LocationResult locationResult = new MyLocation.LocationResult(){
+            @Override
+            public void gotLocation(android.location.Location location) {
+                //Log.d("gotLocation","location is "+location.toString());
+                //Log.d("gotLocation","list is " +list.toString());
+                if (list != null) {
+                    for (int k = 0; k < list.size(); k++) {
+                        String LATITUDE = list.get(k).getLat();
+                        String LONGITUDE = list.get(k).getLon();
+                        String latlng = String.valueOf(location.getLatitude()) + "," + String.valueOf(location.getLongitude());
+                        String format = LATITUDE + "," + LONGITUDE;
+                        Log.d("service", latlng);
+                        FetchWeatherTask ft = new FetchWeatherTask();
+                        ft.execute(latlng,format);
+                        Log.d("service",format);
+                    }
+                }
+            };
+        };
+        myLocation.getLocation(this, locationResult);
+        //Log.d("service","end");
+    }
+    public void CheckIfInRange(Double d){
+        myAudioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+        if(d<100.0){
+            myAudioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+        }
+    }
+    public class FetchWeatherTask extends AsyncTask<String, Void, String> {
+
+        private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
+
+        private String getWeatherDataFromJson(String forecastJsonStr)
+                throws JSONException {
+            JSONObject data = new JSONObject(forecastJsonStr);
+            JSONArray rows = data.getJSONArray("rows");
+            JSONObject lol = rows.getJSONObject(0);
+            JSONArray elements = lol.getJSONArray("elements");
+            JSONObject k = elements.getJSONObject(0);
+            JSONObject distance = k.getJSONObject("distance");
+            double p = distance.getDouble("value");
+            Log.d(LOG_TAG, "value : " + String.valueOf(p));
+            return String.valueOf(p);
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            // If there's no zip code, there's nothing to look up. Verify size of params.
+            if (params.length == 0) {
+                return null;
+            }
+
+            // These two need to be declared outside the try/catch
+            // so that they can be closed in the finally block.
+            HttpURLConnection urlConnection = null;
+            BufferedReader reader = null;
+
+            // Will contain the raw JSON response as a string
+            String forecastJsonStr = null;
+            try {
+                // Construct the URL for the OpenWeatherMap query
+                // Possible parameters are avaiable at OWM's forecast API page, at
+                // http://openweathermap.org/API#forecast
+                final String FORECAST_BASE_URL =
+                        "https://maps.googleapis.com/maps/api/distancematrix/json?";
+                final String QUERY_PARAM = "origins";
+                final String FORMAT_PARAM = "destinations";
+
+                Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
+                        .appendQueryParameter(QUERY_PARAM, params[0])
+                        .appendQueryParameter(FORMAT_PARAM, params[1])
+                        .build();
+
+                URL url = new URL(builtUri.toString());
+
+                Log.v(LOG_TAG, "Built URI " + builtUri.toString());
+                // Create the request to OpenWeatherMap, and open the connection
+                urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                urlConnection.connect();
+
+                // Read the input stream into a String
+                InputStream inputStream = urlConnection.getInputStream();
+                StringBuffer buffer = new StringBuffer();
+                if (inputStream == null) {
+                    // Nothing to do.
+                    return null;
+                }
+                reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
+                    // But it does make debugging a *lot* easier if you print out the completed
+                    // buffer for debugging.
+                    buffer.append(line + "\n");
+                }
+
+                if (buffer.length() == 0) {
+                    // Stream was empty. No point in parsing.
+                    return null;
+                }
+                forecastJsonStr = buffer.toString();
+            } catch (IOException e) {
+                Log.e(LOG_TAG, "Error ", e);
+                // If the code didn't successfully get the weather data, there's no point in attemping
+                // to parse it.
+                return null;
+            } finally {
+                if (urlConnection != null) {
+                    urlConnection.disconnect();
+                }
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (final IOException e) {
+                        Log.e(LOG_TAG, "Error closing stream", e);
+                    }
+                }
+            }
+            try {
+                return getWeatherDataFromJson(forecastJsonStr);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            CheckIfInRange(Double.parseDouble(result));
+        }
+
+    }
+    public static class MyLocation {
+        Timer timer1;
+        LocationManager lm;
+        LocationResult locationResult;
+        boolean gps_enabled=false;
+        boolean network_enabled=false;
+
+        public boolean getLocation(Context context, LocationResult result)
+        {
+            //I use LocationResult callback class to pass location value from MyLocation to user code.
+            //Log.d("service","getLocation");
+            locationResult=result;
+            if(lm==null)
+                lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+
+            //exceptions will be thrown if provider is not permitted.
+            try{gps_enabled=lm.isProviderEnabled(LocationManager.GPS_PROVIDER);}catch(Exception ex){}
+            try{network_enabled=lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);}catch(Exception ex){}
+
+            //don't start listeners if no provider is enabled
+            if(!gps_enabled && !network_enabled)
+                return false;
+
+            if(gps_enabled)
+                lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListenerGps);
+            if(network_enabled)
+                lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListenerNetwork);
+            timer1=new Timer();
+            timer1.schedule(new GetLastLocation(), 20000);
+            return true;
+        }
+
+        LocationListener locationListenerGps = new LocationListener() {
+            public void onLocationChanged(android.location.Location location) {
+                timer1.cancel();
+                locationResult.gotLocation(location);
+                lm.removeUpdates(this);
+                lm.removeUpdates(locationListenerNetwork);
+            }
+            public void onProviderDisabled(String provider) {}
+            public void onProviderEnabled(String provider) {}
+            public void onStatusChanged(String provider, int status, Bundle extras) {}
+        };
+
+        LocationListener locationListenerNetwork = new LocationListener() {
+            public void onLocationChanged(android.location.Location location) {
+                timer1.cancel();
+                locationResult.gotLocation(location);
+                lm.removeUpdates(this);
+                lm.removeUpdates(locationListenerGps);
+            }
+            public void onProviderDisabled(String provider) {}
+            public void onProviderEnabled(String provider) {}
+            public void onStatusChanged(String provider, int status, Bundle extras) {}
+        };
+
+        class GetLastLocation extends TimerTask {
+            @Override
+            public void run() {
+              // lm.removeUpdates(locationListenerGps);
+              // lm.removeUpdates(locationListenerNetwork);
+
+                android.location.Location myLocation;
+                myLocation = getLastKnownLocation();
+               // Log.d("service","getlastLoc");
+                locationResult.gotLocation(myLocation);
+              //  Log.d("service","My location :"+ myLocation.toString());
+                //        if(gps_enabled)
+                //            gps_loc=lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                //        if(network_enabled)
+                //            net_loc=lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+//
+                //        //if there are both values use the latest one
+                //        if(gps_loc!=null && net_loc!=null){
+                //            if(gps_loc.getTime()>net_loc.getTime())
+                //                locationResult.gotLocation(gps_loc);
+                //            else
+                //                locationResult.gotLocation(net_loc);
+                //            return;
+                //        }
+//
+                //        if(gps_loc!=null){
+                //            locationResult.gotLocation(gps_loc);
+                //            return;
+                //        }
+                //        if(net_loc!=null){
+                //            locationResult.gotLocation(net_loc);
+                //           return;
+                //        }
+                //        locationResult.gotLocation(null);
+            }
+        }
+
+        public static abstract class LocationResult{
+            public abstract void gotLocation(android.location.Location location);
+        }
+
+        private android.location.Location getLastKnownLocation() {
+
+            List<String> providers = lm.getProviders(true);
+            android.location.Location bestLocation = null;
+            for (String provider : providers) {
+                android.location.Location l = lm.getLastKnownLocation(provider);
+                if (l == null) {
+                    continue;
+                }
+                if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
+                    // Found best last known location: %s", l);
+                    bestLocation = l;
+                }
+            }
+            return bestLocation;
+        }
+    }
+}

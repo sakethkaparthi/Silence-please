@@ -17,6 +17,7 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 import neinlabs.silenceplease.Database.MySQLiteHelper;
+import neinlabs.silenceplease.Utils.CustomAdapter;
 
 public class SavedLocations extends Activity {
     public static CustomAdapter adapter;

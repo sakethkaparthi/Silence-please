@@ -45,6 +45,12 @@
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings" >
         </activity>
+
+       <service android:name=".Service.BackgroundService"
+           android:exported="false"/>
+        <receiver android:name=".Service.RecieverClass"
+            android:process=":remote"
+            />
     </application>
 
 </manifest>

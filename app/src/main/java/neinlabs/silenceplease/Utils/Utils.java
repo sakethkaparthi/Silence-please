@@ -1,4 +1,4 @@
-package neinlabs.silenceplease;
+package neinlabs.silenceplease.Utils;
 
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;

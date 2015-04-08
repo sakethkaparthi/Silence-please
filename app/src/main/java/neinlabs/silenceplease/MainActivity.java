@@ -1,6 +1,8 @@
 package neinlabs.silenceplease;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
@@ -38,7 +40,11 @@ import java.util.List;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 import neinlabs.silenceplease.Database.MySQLiteHelper;
-import neinlabs.silenceplease.buttons.FloatingActionButton;
+import neinlabs.silenceplease.Service.RecieverClass;
+import neinlabs.silenceplease.Utils.Potato;
+import neinlabs.silenceplease.Utils.ResideMenu;
+import neinlabs.silenceplease.Utils.ResideMenuItem;
+import neinlabs.silenceplease.Utils.buttons.FloatingActionButton;
 
 
 public class MainActivity extends Activity implements OnMapReadyCallback,GoogleMap.OnMapClickListener{
@@ -51,26 +57,10 @@ public class MainActivity extends Activity implements OnMapReadyCallback,GoogleM
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        MapFragment mapFragment = (MapFragment) getFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-        FloatingActionButton fb = (FloatingActionButton)findViewById(R.id.normal_plus);
-        final EditText et = (EditText)findViewById(R.id.et);
-        mDbHelper = new MySQLiteHelper(this);
-        fb.setAlpha(0f);
-        et.setAlpha(0f);
-        startAnim(fb);
-        startAnim(et);
-        fb.setAlpha(1f);
-        et.setAlpha(1f);
-        handler = new Handler();
-        if(!Potato.potate().getUtils().isInternetConnected(this)){
-            Crouton.showText(MainActivity.this,"No Internet Connection", Style.ALERT);
-        }
         resideMenu = new ResideMenu(this);
         resideMenu.setBackground(R.drawable.menu_background);
         resideMenu.attachToActivity(this);
-        resideMenu.addIgnoredView(mapFragment.getView());
+
         // create menu items;
         String titles[] = { "Home", "Saved Locations", "Calendar", "Settings" };
         int icon[] = { R.drawable.icon_home, R.drawable.icon_profile, R.drawable.icon_calendar, R.drawable.icon_settings };
@@ -90,8 +80,26 @@ public class MainActivity extends Activity implements OnMapReadyCallback,GoogleM
                 }
             });
         }
-        Intent intent = new Intent(MainActivity.this,SavedLocations.class);
-        Potato.potate().getNotifications().showNotificationDefaultSound("ok","no",R.drawable.ic_add,intent,MainActivity.this);
+        MapFragment mapFragment = (MapFragment) getFragmentManager()
+                .findFragmentById(R.id.map);
+        resideMenu.addIgnoredView(mapFragment.getView());
+        mapFragment.getMapAsync(this);
+        FloatingActionButton fb = (FloatingActionButton)findViewById(R.id.normal_plus);
+        final EditText et = (EditText)findViewById(R.id.et);
+        mDbHelper = new MySQLiteHelper(this);
+        scheduleAlarm();
+        fb.setAlpha(0f);
+        et.setAlpha(0f);
+        startAnim(fb);
+        startAnim(et);
+        fb.setAlpha(1f);
+        et.setAlpha(1f);
+        handler = new Handler();
+        if(!Potato.potate().getUtils().isInternetConnected(this)){
+            Crouton.showText(MainActivity.this,"No Internet Connection", Style.ALERT);
+        }
+       // BackgroundService bs = new BackgroundService();
+       // bs.setList(mDbHelper.getAllComments());
     }
      @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -105,7 +113,6 @@ public class MainActivity extends Activity implements OnMapReadyCallback,GoogleM
              myAudioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
              }
          }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -123,6 +130,14 @@ public class MainActivity extends Activity implements OnMapReadyCallback,GoogleM
         }
 
         return super.onOptionsItemSelected(item);
+    }
+    public void cancelAlarm() {
+        Intent intent = new Intent(getApplicationContext(), RecieverClass.class);
+        final PendingIntent pIntent = PendingIntent.getBroadcast(this, RecieverClass.REQUEST_CODE,
+                intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager alarm = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+        alarm.cancel(pIntent);
+        Log.d("no","cancelled lel");
     }
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -147,7 +162,18 @@ public class MainActivity extends Activity implements OnMapReadyCallback,GoogleM
        }
    }
  }
-
+    public void scheduleAlarm() {
+        // Construct an intent that will execute the AlarmReceiver
+        Intent intent = new Intent(getApplicationContext(), RecieverClass.class);
+        // Create a PendingIntent to be triggered when the alarm goes off
+        final PendingIntent pIntent = PendingIntent.getBroadcast(this, RecieverClass.REQUEST_CODE,
+                intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        // Setup periodic alarm every 5 seconds
+        long firstMillis = System.currentTimeMillis(); // first run of alarm is immediate
+        int intervalMillis = 10000; // 5 seconds
+        AlarmManager alarm = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+        alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, firstMillis, intervalMillis, pIntent);
+    }
 
   public void checkMarkerRanges(){
       List<Location> list = mDbHelper.getAllComments();
@@ -175,7 +201,6 @@ public class MainActivity extends Activity implements OnMapReadyCallback,GoogleM
         Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade);
         view.startAnimation(animation);
     }
-
     String format = null;
     SavedLocations sl = new SavedLocations();
     @Override
@@ -183,7 +208,7 @@ public class MainActivity extends Activity implements OnMapReadyCallback,GoogleM
         myMap.clear();
         addMarkers();
         if(Potato.potate().getUtils().isInternetConnected(this)){
-        handler.post(runnable);
+        //handler.post(runnable);
         }
         MarkerOptions marker = new MarkerOptions().position(latLng).title("New place");
         myMap.addMarker(marker);
@@ -196,6 +221,7 @@ public class MainActivity extends Activity implements OnMapReadyCallback,GoogleM
         fb.setOnClickListener(new View.OnClickListener() {
         @Override
          public void onClick(View v) {
+            cancelAlarm();
             try{
             location.setId(sl.getSize()+1);}catch (Exception e){
                 e.printStackTrace();

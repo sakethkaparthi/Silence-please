@@ -1,4 +1,4 @@
-package neinlabs.silenceplease.buttons;
+package neinlabs.silenceplease.Utils.buttons;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

@@ -1,4 +1,4 @@
-package neinlabs.silenceplease;
+package neinlabs.silenceplease.Utils;
 
 import android.content.Context;
 import android.content.Intent;

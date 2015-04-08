@@ -1,10 +1,12 @@
-package neinlabs.silenceplease;
+package neinlabs.silenceplease.Utils;
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import neinlabs.silenceplease.R;
 
 /**
  * User: special

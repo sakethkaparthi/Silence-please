@@ -1,4 +1,4 @@
-package neinlabs.silenceplease;
+package neinlabs.silenceplease.Utils;
 
 import android.app.Activity;
 import android.content.Context;
@@ -22,6 +22,8 @@ import com.nineoldandroids.view.ViewHelper;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import neinlabs.silenceplease.R;
 
 /**
  * User: special
