@@ -1,0 +1,5 @@
+Problem:
+Many times we go to silence zones but forget to switch our mobile to silence mode and that can create embarrassing situations. 
+Proposed Solution:
+Desiging an app that stores specified locations ,be it class or office or library, it checks the current location everytime
+in some interval and if it is near any of the saved locations, it makes the mobile go silent.
