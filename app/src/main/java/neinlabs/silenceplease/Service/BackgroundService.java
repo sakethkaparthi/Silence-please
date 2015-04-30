@@ -3,6 +3,7 @@ package neinlabs.silenceplease.Service;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.media.AudioManager;
@@ -33,24 +34,23 @@ import neinlabs.silenceplease.Location;
  */
 public class BackgroundService extends IntentService {
     static List<Location> list;
-    MySQLiteHelper mySQLiteHelper;  ;
+    MySQLiteHelper mySQLiteHelper;
+    SharedPreferences mSettings;
     AudioManager myAudioManager;
     public BackgroundService() {
-        // Used to name the worker thread, important only for debugging.
         super("test-service");
     }
-
     @Override
     protected void onHandleIntent(Intent intent) {
         mySQLiteHelper = new MySQLiteHelper(getApplicationContext());
+        mSettings = getApplication().getSharedPreferences("Settings", 0);
+        Log.d("service",String.valueOf(mSettings.getInt("sync_frequency",1)));
         list=mySQLiteHelper.getAllComments();
-        //Log.d("service", "start");
+        Log.d("service", "start");
         MyLocation myLocation = new MyLocation();
         MyLocation.LocationResult locationResult = new MyLocation.LocationResult(){
             @Override
             public void gotLocation(android.location.Location location) {
-                //Log.d("gotLocation","location is "+location.toString());
-                //Log.d("gotLocation","list is " +list.toString());
                 if (list != null) {
                     for (int k = 0; k < list.size(); k++) {
                         String LATITUDE = list.get(k).getLat();
@@ -58,7 +58,7 @@ public class BackgroundService extends IntentService {
                         String latlng = String.valueOf(location.getLatitude()) + "," + String.valueOf(location.getLongitude());
                         String format = LATITUDE + "," + LONGITUDE;
                         Log.d("service", latlng);
-                        FetchWeatherTask ft = new FetchWeatherTask();
+                        FetchDistanceTask ft = new FetchDistanceTask();
                         ft.execute(latlng,format);
                         Log.d("service",format);
                     }
@@ -66,7 +66,7 @@ public class BackgroundService extends IntentService {
             };
         };
         myLocation.getLocation(this, locationResult);
-        //Log.d("service","end");
+        Log.d("service","end");
     }
     public void CheckIfInRange(Double d){
         myAudioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
@@ -74,11 +74,11 @@ public class BackgroundService extends IntentService {
             myAudioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
         }
     }
-    public class FetchWeatherTask extends AsyncTask<String, Void, String> {
+    public class FetchDistanceTask extends AsyncTask<String, Void, String> {
 
-        private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
+        private final String LOG_TAG = FetchDistanceTask.class.getSimpleName();
 
-        private String getWeatherDataFromJson(String forecastJsonStr)
+        private String getDistanceDataFromJson(String forecastJsonStr)
                 throws JSONException {
             JSONObject data = new JSONObject(forecastJsonStr);
             JSONArray rows = data.getJSONArray("rows");
@@ -93,23 +93,13 @@ public class BackgroundService extends IntentService {
 
         @Override
         protected String doInBackground(String... params) {
-
-            // If there's no zip code, there's nothing to look up. Verify size of params.
             if (params.length == 0) {
                 return null;
             }
-
-            // These two need to be declared outside the try/catch
-            // so that they can be closed in the finally block.
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
-
-            // Will contain the raw JSON response as a string
             String forecastJsonStr = null;
             try {
-                // Construct the URL for the OpenWeatherMap query
-                // Possible parameters are avaiable at OWM's forecast API page, at
-                // http://openweathermap.org/API#forecast
                 final String FORECAST_BASE_URL =
                         "https://maps.googleapis.com/maps/api/distancematrix/json?";
                 final String QUERY_PARAM = "origins";
@@ -123,7 +113,7 @@ public class BackgroundService extends IntentService {
                 URL url = new URL(builtUri.toString());
 
                 Log.v(LOG_TAG, "Built URI " + builtUri.toString());
-                // Create the request to OpenWeatherMap, and open the connection
+                // Create the request to Google web Matrix, and open the connection
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
                 urlConnection.connect();
@@ -152,8 +142,6 @@ public class BackgroundService extends IntentService {
                 forecastJsonStr = buffer.toString();
             } catch (IOException e) {
                 Log.e(LOG_TAG, "Error ", e);
-                // If the code didn't successfully get the weather data, there's no point in attemping
-                // to parse it.
                 return null;
             } finally {
                 if (urlConnection != null) {
@@ -168,7 +156,7 @@ public class BackgroundService extends IntentService {
                 }
             }
             try {
-                return getWeatherDataFromJson(forecastJsonStr);
+                return getDistanceDataFromJson(forecastJsonStr);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -241,37 +229,9 @@ public class BackgroundService extends IntentService {
         class GetLastLocation extends TimerTask {
             @Override
             public void run() {
-              // lm.removeUpdates(locationListenerGps);
-              // lm.removeUpdates(locationListenerNetwork);
-
                 android.location.Location myLocation;
                 myLocation = getLastKnownLocation();
-               // Log.d("service","getlastLoc");
                 locationResult.gotLocation(myLocation);
-              //  Log.d("service","My location :"+ myLocation.toString());
-                //        if(gps_enabled)
-                //            gps_loc=lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                //        if(network_enabled)
-                //            net_loc=lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-//
-                //        //if there are both values use the latest one
-                //        if(gps_loc!=null && net_loc!=null){
-                //            if(gps_loc.getTime()>net_loc.getTime())
-                //                locationResult.gotLocation(gps_loc);
-                //            else
-                //                locationResult.gotLocation(net_loc);
-                //            return;
-                //        }
-//
-                //        if(gps_loc!=null){
-                //            locationResult.gotLocation(gps_loc);
-                //            return;
-                //        }
-                //        if(net_loc!=null){
-                //            locationResult.gotLocation(net_loc);
-                //           return;
-                //        }
-                //        locationResult.gotLocation(null);
             }
         }
 

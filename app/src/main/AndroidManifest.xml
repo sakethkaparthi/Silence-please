@@ -41,12 +41,8 @@
             android:name=".SavedLocations"
             android:label="Saved locations" >
         </activity>
-        <activity
-            android:name=".SettingsActivity"
-            android:label="@string/title_activity_settings" >
-        </activity>
 
-       <service android:name=".Service.BackgroundService"
+        <service android:name=".Service.BackgroundService"
            android:exported="false"/>
         <receiver android:name=".Service.RecieverClass"
             android:process=":remote"

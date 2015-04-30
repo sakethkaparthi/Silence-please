@@ -1,9 +1,0 @@
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <!-- A 'parent' preference, which enables/disables child preferences (below)
-         when checked/unchecked. -->
-    <CheckBoxPreference
-        android:key="notifications_new_message"
-        android:title="Process running Notification"
-        android:defaultValue="true" />
-</PreferenceScreen>
