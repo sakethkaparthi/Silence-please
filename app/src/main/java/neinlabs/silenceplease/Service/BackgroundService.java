@@ -85,9 +85,6 @@ public class BackgroundService extends IntentService {
         if(!gps_enabled){
             Potato.potate().getNotifications().showNotificationNoSound("GPS Connectivity Error","You have location services disabled", R.drawable.ic_place_white_24dp,new Intent( Settings.ACTION_LOCATION_SOURCE_SETTINGS),getApplicationContext());
            }
-        if(!network_enabled){
-            Potato.potate().getNotifications().showNotificationNoSound("Network Connectivity Error","You have Network services disabled", R.drawable.error_center_x,new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS),getApplicationContext());
-        }
         Log.d("service",String.valueOf(mSettings.getInt("sync_frequency",1)));
         list=getAllComments();
         Log.d("service", "start");
