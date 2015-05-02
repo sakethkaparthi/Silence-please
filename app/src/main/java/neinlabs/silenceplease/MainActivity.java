@@ -5,6 +5,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -138,7 +139,8 @@ public class MainActivity extends Activity implements OnMapReadyCallback,GoogleM
         List<Location> comments = new ArrayList<>();
 
         String URL = LocationProvider.URL;
-        Cursor cursor = managedQuery(Uri.parse(URL), null, null, null, "name");
+        CursorLoader cursorLoader = new CursorLoader(this,Uri.parse(URL),null,null,null,"name");
+        Cursor cursor = cursorLoader.loadInBackground();
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
             Location location = cursorToComment(cursor);
@@ -221,7 +223,4 @@ public class MainActivity extends Activity implements OnMapReadyCallback,GoogleM
            }
        });
       }
-
-
-
 }

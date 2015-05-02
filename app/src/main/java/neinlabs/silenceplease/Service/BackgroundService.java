@@ -2,8 +2,10 @@ package neinlabs.silenceplease.Service;
 
 import android.app.IntentService;
 import android.content.Context;
+import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.media.AudioManager;
@@ -22,36 +24,60 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import neinlabs.silenceplease.Database.MySQLiteHelper;
+import neinlabs.silenceplease.Database.LocationProvider;
 import neinlabs.silenceplease.Location;
+import neinlabs.silenceplease.Utils.Potato;
 
 /**
  * Created by Saketh on 05-04-2015.
  */
 public class BackgroundService extends IntentService {
     static List<Location> list;
-    MySQLiteHelper mySQLiteHelper;
     SharedPreferences mSettings;
     AudioManager myAudioManager;
     public BackgroundService() {
         super("test-service");
     }
+    public List<Location> getAllComments() {
+        List<Location> comments = new ArrayList<>();
+
+        String URL = LocationProvider.URL;
+        CursorLoader cursorLoader = new CursorLoader(getApplicationContext(),Uri.parse(URL),null,null,null,"name");
+        Cursor cursor = cursorLoader.loadInBackground();
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            Location location = cursorToComment(cursor);
+            comments.add(location);
+            cursor.moveToNext();
+        }
+        // make sure to close the cursor
+        cursor.close();
+        return comments;
+    }
+    private Location cursorToComment(Cursor cursor) {
+        Location comment = new Location();
+        comment.setId(cursor.getLong(cursor.getColumnIndex(LocationProvider._ID)));
+        comment.setName(cursor.getString(cursor.getColumnIndex(LocationProvider.NAME)));
+        comment.setLat(cursor.getString(cursor.getColumnIndex(LocationProvider.latitude)));
+        comment.setLon(cursor.getString(cursor.getColumnIndex(LocationProvider.longitude)));
+        return comment;
+    }
     @Override
     protected void onHandleIntent(Intent intent) {
-        mySQLiteHelper = new MySQLiteHelper(getApplicationContext());
         mSettings = getApplication().getSharedPreferences("Settings", 0);
         Log.d("service",String.valueOf(mSettings.getInt("sync_frequency",1)));
-        list=mySQLiteHelper.getAllComments();
+        list=getAllComments();
         Log.d("service", "start");
         MyLocation myLocation = new MyLocation();
         MyLocation.LocationResult locationResult = new MyLocation.LocationResult(){
             @Override
             public void gotLocation(android.location.Location location) {
-                if (list != null) {
+                if (list != null && Potato.potate().getUtils().isInternetConnected(getApplicationContext())) {
                     for (int k = 0; k < list.size(); k++) {
                         String LATITUDE = list.get(k).getLat();
                         String LONGITUDE = list.get(k).getLon();

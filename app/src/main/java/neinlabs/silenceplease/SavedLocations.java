@@ -1,6 +1,7 @@
 package neinlabs.silenceplease;
 
 import android.app.Activity;
+import android.content.CursorLoader;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -29,7 +30,8 @@ public class SavedLocations extends Activity {
         List<Location> comments = new ArrayList<>();
 
         String URL = LocationProvider.URL;
-        Cursor cursor = managedQuery(Uri.parse(URL), null, null, null, "name");
+        CursorLoader cursorLoader = new CursorLoader(this,Uri.parse(URL),null,null,null,"name");
+        Cursor cursor = cursorLoader.loadInBackground();
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
             Location location = cursorToComment(cursor);

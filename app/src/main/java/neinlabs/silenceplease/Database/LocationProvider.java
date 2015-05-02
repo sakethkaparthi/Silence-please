@@ -30,7 +30,6 @@ public class LocationProvider extends ContentProvider {
 
     static final int locations = 1;
     static final int location_ID = 2;
-
     static final UriMatcher uriMatcher;
     static{
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
