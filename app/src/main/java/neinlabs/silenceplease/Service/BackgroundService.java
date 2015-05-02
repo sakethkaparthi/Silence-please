@@ -12,6 +12,7 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -31,6 +32,7 @@ import java.util.TimerTask;
 
 import neinlabs.silenceplease.Database.LocationProvider;
 import neinlabs.silenceplease.Location;
+import neinlabs.silenceplease.R;
 import neinlabs.silenceplease.Utils.Potato;
 
 /**
@@ -70,6 +72,23 @@ public class BackgroundService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         mSettings = getApplication().getSharedPreferences("Settings", 0);
+        LocationManager lm = null;
+        boolean gps_enabled = false,network_enabled = false;
+        if(lm==null)
+            lm = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+        try{
+            gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        }catch(Exception ex){}
+        try{
+            network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        }catch(Exception ex){}
+
+        if(!gps_enabled){
+            Potato.potate().getNotifications().showNotificationNoSound("GPS Connectivity Error","You have location services disabled", R.drawable.error_center_x,new Intent( Settings.ACTION_LOCATION_SOURCE_SETTINGS),getApplicationContext());
+           }
+        if(!network_enabled){
+            Potato.potate().getNotifications().showNotificationNoSound("Network Connectivity Error","You have Network services disabled", R.drawable.error_center_x,new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS),getApplicationContext());
+        }
         Log.d("service",String.valueOf(mSettings.getInt("sync_frequency",1)));
         list=getAllComments();
         Log.d("service", "start");

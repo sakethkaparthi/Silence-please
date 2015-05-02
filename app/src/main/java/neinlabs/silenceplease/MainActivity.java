@@ -56,8 +56,8 @@ public class MainActivity extends Activity implements OnMapReadyCallback,GoogleM
         resideMenu.setBackground(R.drawable.menu_background);
         resideMenu.attachToActivity(this);
          // create menu items;
-        String titles[] = { "Home", "Saved Locations", "Settings" };
-        int icon[] = { R.drawable.icon_home, R.drawable.icon_profile, R.drawable.icon_settings };
+        String titles[] = { "Saved Locations" };
+        int icon[] = { R.drawable.ic_place_white_24dp };
 
         for (int i = 0; i < titles.length; i++){
             final ResideMenuItem item = new ResideMenuItem(this, icon[i], titles[i]);
@@ -71,8 +71,8 @@ public class MainActivity extends Activity implements OnMapReadyCallback,GoogleM
                 }
             });
         }
-        ResideMenuItem item =new ResideMenuItem(this,R.drawable.ic_delete_white_36dp,"Stop");
-        resideMenu.addMenuItem(item,ResideMenu.DIRECTION_RIGHT);
+        ResideMenuItem item =new ResideMenuItem(this,R.drawable.ic_cancel_white_24dp,"Stop");
+        resideMenu.addMenuItem(item,ResideMenu.DIRECTION_LEFT);
         item.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
