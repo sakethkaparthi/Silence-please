@@ -47,6 +47,9 @@
         <receiver android:name=".Service.RecieverClass"
             android:process=":remote"
             />
+        <provider android:name=".Database.LocationProvider"
+            android:authorities="com.example.provider.LocationDB">
+        </provider>
     </application>
 
 </manifest>

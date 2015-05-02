@@ -1,7 +1,9 @@
 package neinlabs.silenceplease;
 
 import android.app.Activity;
+import android.database.Cursor;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -9,26 +11,42 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
-import de.keyboardsurfer.android.widget.crouton.Crouton;
-import de.keyboardsurfer.android.widget.crouton.Style;
-import neinlabs.silenceplease.Database.MySQLiteHelper;
+import neinlabs.silenceplease.Database.LocationProvider;
 import neinlabs.silenceplease.Utils.CustomAdapter;
 
 public class SavedLocations extends Activity {
     public static CustomAdapter adapter;
     public static ListView listView;
-    public static MySQLiteHelper mDbHelper;
     public static List<Location> CustomListViewValuesArr = new ArrayList<Location>();
-    public void add(Location l){
-        CustomListViewValuesArr.add(l);
+
+    public List<Location> getAllComments() {
+        List<Location> comments = new ArrayList<>();
+
+        String URL = LocationProvider.URL;
+        Cursor cursor = managedQuery(Uri.parse(URL), null, null, null, "name");
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            Location location = cursorToComment(cursor);
+            comments.add(location);
+            cursor.moveToNext();
+        }
+        // make sure to close the cursor
+        cursor.close();
+        return comments;
     }
-    public int getSize(){
-        return CustomListViewValuesArr.size();
+    private Location cursorToComment(Cursor cursor) {
+        Location comment = new Location();
+        comment.setId(cursor.getLong(cursor.getColumnIndex(LocationProvider._ID)));
+        comment.setName(cursor.getString(cursor.getColumnIndex(LocationProvider.NAME)));
+        comment.setLat(cursor.getString(cursor.getColumnIndex(LocationProvider.latitude)));
+        comment.setLon(cursor.getString(cursor.getColumnIndex(LocationProvider.longitude)));
+        return comment;
     }
 
     @Override
@@ -36,13 +54,12 @@ public class SavedLocations extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
         listView=(ListView)findViewById(R.id.list);
-        mDbHelper = new MySQLiteHelper(this);
-        CustomListViewValuesArr= mDbHelper.getAllComments();
+        CustomListViewValuesArr= getAllComments();
         adapter =new CustomAdapter(this,CustomListViewValuesArr,getResources());
         listView.setAdapter(adapter);
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+            public boolean onItemLongClick(AdapterView<?> parent, final View view, final int position, long id) {
                 new SweetAlertDialog(SavedLocations.this, SweetAlertDialog.WARNING_TYPE)
                         .setTitleText("Are you sure?")
                         .setContentText("Won't be able to recover this Data!")
@@ -50,13 +67,18 @@ public class SavedLocations extends Activity {
                         .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                             @Override
                             public void onClick(SweetAlertDialog sDialog) {
-                                onItemClick(position);
+                                TextView et = (TextView)view.findViewById(R.id.Name);
+                                String name = et.getText().toString();
+                                onItemClick(name);
                                 sDialog
                                         .setTitleText("Deleted!")
                                         .setContentText("Your Loacation has been deleted!")
                                         .setConfirmText("OK")
                                         .setConfirmClickListener(null)
                                         .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
+                                CustomListViewValuesArr.clear();
+                                CustomListViewValuesArr=getAllComments();
+                                adapter.notifyDataSetChanged();
                             }
                         })
                         .show();
@@ -111,16 +133,8 @@ public class SavedLocations extends Activity {
         adapter.notifyDataSetChanged();
     }
 
-    public void onItemClick(int mPosition)
+    public void onItemClick(String name)
     {
-        try{
-            neinlabs.silenceplease.Location tempValues = (neinlabs.silenceplease.Location) CustomListViewValuesArr.get(mPosition);
-            mDbHelper.deleteComment(tempValues);
-            CustomListViewValuesArr.remove(mPosition);
-            adapter.notifyDataSetChanged();
-            Crouton.showText(SavedLocations.this, "Location Deleted", Style.CONFIRM);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+        int noD = getContentResolver().delete(LocationProvider.CONTENT_URI,LocationProvider.NAME+" = ? ",new String[]{name});
     }
 }

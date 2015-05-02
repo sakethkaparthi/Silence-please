@@ -3,9 +3,12 @@ package neinlabs.silenceplease;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -15,6 +18,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -23,11 +27,12 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
-import neinlabs.silenceplease.Database.MySQLiteHelper;
+import neinlabs.silenceplease.Database.LocationProvider;
 import neinlabs.silenceplease.Service.RecieverClass;
 import neinlabs.silenceplease.Utils.Potato;
 import neinlabs.silenceplease.Utils.ResideMenu;
@@ -38,7 +43,6 @@ import neinlabs.silenceplease.Utils.buttons.FloatingActionButton;
 public class MainActivity extends Activity implements OnMapReadyCallback,GoogleMap.OnMapClickListener{
     Handler handler;
     GoogleMap myMap;
-    MySQLiteHelper mDbHelper;
     ResideMenu resideMenu;
     SharedPreferences sharedPref;
 
@@ -80,7 +84,6 @@ public class MainActivity extends Activity implements OnMapReadyCallback,GoogleM
         mapFragment.getMapAsync(this);
         FloatingActionButton fb = (FloatingActionButton)findViewById(R.id.normal_plus);
         final EditText et = (EditText)findViewById(R.id.et);
-        mDbHelper = new MySQLiteHelper(this);
         scheduleAlarm();
         resideMenu.openMenu(ResideMenu.DIRECTION_LEFT);
         fb.setAlpha(0f);
@@ -131,8 +134,31 @@ public class MainActivity extends Activity implements OnMapReadyCallback,GoogleM
         myMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
         addMarkers();
     }
+    public List<Location> getAllComments() {
+        List<Location> comments = new ArrayList<>();
+
+        String URL = LocationProvider.URL;
+        Cursor cursor = managedQuery(Uri.parse(URL), null, null, null, "name");
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            Location location = cursorToComment(cursor);
+            comments.add(location);
+            cursor.moveToNext();
+        }
+        // make sure to close the cursor
+        cursor.close();
+        return comments;
+    }
+    private Location cursorToComment(Cursor cursor) {
+        Location comment = new Location();
+        comment.setId(cursor.getLong(cursor.getColumnIndex(LocationProvider._ID)));
+        comment.setName(cursor.getString(cursor.getColumnIndex(LocationProvider.NAME)));
+        comment.setLat(cursor.getString(cursor.getColumnIndex(LocationProvider.latitude)));
+        comment.setLon(cursor.getString(cursor.getColumnIndex(LocationProvider.longitude)));
+        return comment;
+    }
  public void addMarkers(){
-     List<Location> list = mDbHelper.getAllComments();
+     List<Location> list = getAllComments();
    if(list!=null) {
        for (int i = 0; i < list.size(); i++) {
            String NAME = list.get(i).getName();
@@ -178,16 +204,24 @@ public class MainActivity extends Activity implements OnMapReadyCallback,GoogleM
         fb.setOnClickListener(new View.OnClickListener() {
         @Override
          public void onClick(View v) {
-            try{
-            location.setId(sl.getSize()+1);}catch (Exception e){
-                e.printStackTrace();
-            }
-            location.setName(et.getText().toString());
-            location.setLat(String.valueOf(latLng.latitude));
-            location.setLon(String.valueOf(latLng.longitude));
-            mDbHelper.createComment(location);
+            // Add a new student record
+            ContentValues values = new ContentValues();
+            values.put(LocationProvider.NAME,
+                    ((EditText)findViewById(R.id.et)).getText().toString());
+
+            values.put(LocationProvider.latitude,
+                    String.valueOf(latLng.latitude));
+            values.put(LocationProvider.longitude,
+                    String.valueOf(latLng.longitude));
+            Uri uri = getContentResolver().insert(
+                    LocationProvider.CONTENT_URI, values);
+            Toast.makeText(getBaseContext(),
+                    uri.toString(), Toast.LENGTH_LONG).show();
             startActivity(new Intent(MainActivity.this,SavedLocations.class));
            }
        });
       }
+
+
+
 }
