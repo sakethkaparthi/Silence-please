@@ -9,6 +9,7 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,7 +20,8 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.EditText;
-import android.widget.Toast;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -33,6 +35,7 @@ import java.util.List;
 
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
+import me.alexrs.prefs.lib.Prefs;
 import neinlabs.silenceplease.Database.LocationProvider;
 import neinlabs.silenceplease.Service.RecieverClass;
 import neinlabs.silenceplease.Utils.Potato;
@@ -46,7 +49,7 @@ public class MainActivity extends Activity implements OnMapReadyCallback,GoogleM
     GoogleMap myMap;
     ResideMenu resideMenu;
     SharedPreferences sharedPref;
-
+    ImageView iv;
     @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -55,6 +58,9 @@ public class MainActivity extends Activity implements OnMapReadyCallback,GoogleM
         resideMenu = new ResideMenu(this);
         resideMenu.setBackground(R.drawable.menu_background);
         resideMenu.attachToActivity(this);
+        TextView textView1 = (TextView)findViewById(R.id.tv_appname);
+        Typeface custom_font = Typeface.createFromAsset(getAssets(),"fonts/font.ttf") ;
+        textView1.setTypeface(custom_font);
          // create menu items;
         String titles[] = { "Saved Locations" };
         int icon[] = { R.drawable.ic_place_white_24dp };
@@ -86,17 +92,19 @@ public class MainActivity extends Activity implements OnMapReadyCallback,GoogleM
         FloatingActionButton fb = (FloatingActionButton)findViewById(R.id.normal_plus);
         final EditText et = (EditText)findViewById(R.id.et);
         scheduleAlarm();
-        resideMenu.openMenu(ResideMenu.DIRECTION_LEFT);
-        fb.setAlpha(0f);
-        et.setAlpha(0f);
-        startAnim(fb);
-        startAnim(et);
         fb.setAlpha(1f);
         et.setAlpha(1f);
         handler = new Handler();
         if(!Potato.potate().getUtils().isInternetConnected(this)){
             Crouton.showText(MainActivity.this,"No Internet Connection", Style.ALERT);
         }
+        iv = (ImageView)findViewById(R.id.imageView2);
+        iv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                resideMenu.openMenu(ResideMenu.DIRECTION_LEFT);
+            }
+        });
 
     }
      @Override
@@ -134,6 +142,12 @@ public class MainActivity extends Activity implements OnMapReadyCallback,GoogleM
         myMap.clear();
         myMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
         addMarkers();
+        Double latitude = Double.parseDouble(Prefs.with(this).getString("latitude","0"));
+        Double longitude = Double.parseDouble(Prefs.with(this).getString("longitude", "0"));
+        MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(latitude, longitude)).title("New Place");
+        if (latitude!=0 && longitude!=0){
+        myMap.addMarker(markerOptions);
+        }
     }
     public List<Location> getAllComments() {
         List<Location> comments = new ArrayList<>();
@@ -173,7 +187,6 @@ public class MainActivity extends Activity implements OnMapReadyCallback,GoogleM
    }
  }
     public void scheduleAlarm() {
-
         long time =1;
         Log.d("sync_freq",String.valueOf(time));
         // Construct an intent that will execute the AlarmReceiver
@@ -198,29 +211,28 @@ public class MainActivity extends Activity implements OnMapReadyCallback,GoogleM
         addMarkers();
         MarkerOptions marker = new MarkerOptions().position(latLng).title("New place");
         myMap.addMarker(marker);
+        Prefs.with(this).save("latitude", String.valueOf(latLng.latitude));
+        Prefs.with(this).save("longitude", String.valueOf(latLng.longitude));
         FloatingActionButton fb = (FloatingActionButton)findViewById(R.id.normal_plus);
         final EditText et = (EditText)findViewById(R.id.et);
         et.setVisibility(View.VISIBLE);
-        startAnim(et);
-        final Location location = new Location();
         fb.setOnClickListener(new View.OnClickListener() {
-        @Override
-         public void onClick(View v) {
-            // Add a new student record
-            ContentValues values = new ContentValues();
-            values.put(LocationProvider.NAME,
-                    ((EditText)findViewById(R.id.et)).getText().toString());
+            @Override
+            public void onClick(View v) {
+                // Add a new student record
+                ContentValues values = new ContentValues();
+                values.put(LocationProvider.NAME,
+                        ((EditText) findViewById(R.id.et)).getText().toString());
 
-            values.put(LocationProvider.latitude,
-                    String.valueOf(latLng.latitude));
-            values.put(LocationProvider.longitude,
-                    String.valueOf(latLng.longitude));
-            Uri uri = getContentResolver().insert(
-                    LocationProvider.CONTENT_URI, values);
-            Toast.makeText(getBaseContext(),
-                    uri.toString(), Toast.LENGTH_LONG).show();
-            startActivity(new Intent(MainActivity.this,SavedLocations.class));
-           }
-       });
+                values.put(LocationProvider.latitude,
+                        String.valueOf(latLng.latitude));
+                values.put(LocationProvider.longitude,
+                        String.valueOf(latLng.longitude));
+                Uri uri = getContentResolver().insert(
+                        LocationProvider.CONTENT_URI, values);
+                startActivity(new Intent(MainActivity.this, SavedLocations.class));
+            }
+        });
       }
+
 }

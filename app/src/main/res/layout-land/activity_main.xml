@@ -11,7 +11,15 @@
         android:layout_height="wrap_content"
         android:id="@+id/no"
         android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageView2"
+            android:background="@drawable/ic_menu_white_18dp" />
+
         <TextView
+            android:id="@+id/tv_appname"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="Silence Please"

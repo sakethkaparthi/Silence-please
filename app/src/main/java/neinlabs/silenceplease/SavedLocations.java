@@ -3,6 +3,7 @@ package neinlabs.silenceplease;
 import android.app.Activity;
 import android.content.CursorLoader;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -59,6 +60,9 @@ public class SavedLocations extends Activity {
         CustomListViewValuesArr= getAllComments();
         adapter =new CustomAdapter(this,CustomListViewValuesArr,getResources());
         listView.setAdapter(adapter);
+        TextView textView1 = (TextView)findViewById(R.id.tv_locations);
+        Typeface custom_font = Typeface.createFromAsset(getAssets(),"fonts/font.ttf") ;
+        textView1.setTypeface(custom_font);
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, final View view, final int position, long id) {

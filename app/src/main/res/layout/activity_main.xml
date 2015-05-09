@@ -3,7 +3,8 @@
     android:layout_height="fill_parent"
     android:layout_width="fill_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:fab="http://schemas.android.com/apk/res-auto">
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/imageview">
 
 <LinearLayout
     android:layout_width="fill_parent"
@@ -37,14 +38,21 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
-    <TextView
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageView2"
+            android:background="@drawable/ic_menu_white_18dp" />
+
+        <TextView
+            android:id="@+id/tv_appname"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="Silence Please"
         android:textColor="@color/abc_primary_text_material_dark"
         android:textSize="24sp"
-        android:layout_centerInParent="true"
-        android:gravity="center"
+        android:gravity="center_horizontal"
         android:textStyle="bold"/></LinearLayout>
     <LinearLayout
         android:layout_width="fill_parent"
@@ -55,7 +63,6 @@
             android:id="@+id/et"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone"
             android:hint="Place Name"
             />
         </LinearLayout>
