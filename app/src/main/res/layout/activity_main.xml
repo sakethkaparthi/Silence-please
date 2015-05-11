@@ -4,7 +4,8 @@
     android:layout_width="fill_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:fab="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/HomeScreen">
+    android:id="@+id/HomeScreen"
+    xmlns:bootstrap="http://schemas.android.com/tools">
 
 
     <LinearLayout
@@ -55,6 +56,13 @@
             android:layout_alignParentRight="true"
             />
     </RelativeLayout>
-
-
+<TextView
+    android:id="@+id/description"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="50dp"
+    android:layout_below="@id/plese"
+    android:textSize="15sp"
+    android:textColor="@color/abc_primary_text_material_dark"
+    />
 </RelativeLayout>

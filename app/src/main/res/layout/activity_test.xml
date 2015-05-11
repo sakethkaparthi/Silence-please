@@ -13,14 +13,22 @@
         android:padding="10dp">
         <TextView
             android:id="@+id/tv_locations"
-            android:layout_width="fill_parent"
+            android:layout_width="306dp"
             android:layout_height="wrap_content"
             android:text="Saved Locations"
             android:textColor="@color/abc_primary_text_material_dark"
             android:textSize="24sp"
             android:layout_centerInParent="true"
             android:gravity="center"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:padding="2dp"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/deleteall"
+            android:background="@drawable/ic_delete_white_18dp" />
+
     </LinearLayout>
 
     <ListView

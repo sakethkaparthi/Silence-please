@@ -8,8 +8,6 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
@@ -61,19 +59,20 @@ public class MainActivity extends Activity{
             }
 
             k.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if(k.isChecked()){
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (k.isChecked()) {
                         textView2.setText("ON");
-                        Prefs.with(MainActivity.this).save("state",true);
+                        Prefs.with(MainActivity.this).save("state", true);
                         scheduleAlarm();
-                    }else {
+                    } else {
                         textView2.setText("OFF");
-                        Prefs.with(MainActivity.this).save("state",false);
+                        Prefs.with(MainActivity.this).save("state", false);
                         cancelAlarm();
                     }
-                    }
-        });
+                }
+            });
+
          // create menu items;
             String titles[] = { "Saved Locations","New place" };
             int icon[] = { R.drawable.ic_place_white_24dp,R.drawable.ic_add };
@@ -82,17 +81,18 @@ public class MainActivity extends Activity{
                 final ResideMenuItem item = new ResideMenuItem(this, icon[i], titles[i]);
                 resideMenu.addMenuItem(item,  ResideMenu.DIRECTION_LEFT);
                 item.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                        if(item.getTitle()=="Saved Locations"){
-                            startActivity(new Intent(MainActivity.this,SavedLocations.class));
+                    @Override
+                    public void onClick(View v) {
+                        if (item.getTitle() == "Saved Locations") {
+                            startActivity(new Intent(MainActivity.this, SavedLocations.class));
                         }
-                        if(item.getTitle()=="New place"){
-                            startActivity(new Intent(MainActivity.this,NewPlace.class));
+                        if (item.getTitle() == "New place") {
+                            startActivity(new Intent(MainActivity.this, NewPlace.class));
                         }
                     }
-            });
+                });
             }
+
             if(!Potato.potate().getUtils().isInternetConnected(this)){
                 Crouton.showText(MainActivity.this,"No Internet Connection", Style.ALERT);
             }
@@ -103,26 +103,11 @@ public class MainActivity extends Activity{
                     resideMenu.openMenu(ResideMenu.DIRECTION_LEFT);
                         }
         });
+            TextView desc = (TextView)findViewById(R.id.description);
+            desc.setTypeface(custom_font2);
+            desc.setText("Silence Please is a free Open source android application which helps in turning the mobile to silent mode at desired locations without manual work. Start by adding a location from the menu on top left. Please feel free to send a pull request or open an issue");
 
         }
-        @Override
-        public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-        @Override
-        public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if(id==R.id.Saved_locs){
-            startActivity(new Intent(MainActivity.this, SavedLocations.class));
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
         public void cancelAlarm() {
         Intent intent = new Intent(getApplicationContext(), RecieverClass.class);
         final PendingIntent pIntent = PendingIntent.getBroadcast(this, RecieverClass.REQUEST_CODE,

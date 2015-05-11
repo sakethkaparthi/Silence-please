@@ -6,19 +6,18 @@ import android.database.Cursor;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.gc.materialdesign.widgets.Dialog;
 import com.gc.materialdesign.widgets.SnackBar;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.pedant.SweetAlert.SweetAlertDialog;
 import neinlabs.silenceplease.Database.LocationProvider;
 import neinlabs.silenceplease.Utils.CustomAdapter;
 
@@ -26,6 +25,7 @@ public class SavedLocations extends Activity {
     public static CustomAdapter adapter;
     public static ListView listView;
     public static List<Location> CustomListViewValuesArr = new ArrayList<Location>();
+    ImageView im;
 
     public List<Location> getAllComments() {
         List<Location> comments = new ArrayList<>();
@@ -60,8 +60,28 @@ public class SavedLocations extends Activity {
         CustomListViewValuesArr= getAllComments();
         adapter =new CustomAdapter(this,CustomListViewValuesArr,getResources());
         listView.setAdapter(adapter);
+        im = (ImageView)findViewById(R.id.deleteall);
+        im.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Dialog dialog = new Dialog(SavedLocations.this, "Are you sure?", "This will delete all the location data and recovery is not possible");
+                dialog.setOnAcceptButtonClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        deleteAll();
+                    }
+                });
+                dialog.addCancelButton("Cancel", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+                dialog.show();
+            }
+        });
         TextView textView1 = (TextView)findViewById(R.id.tv_locations);
-        Typeface custom_font = Typeface.createFromAsset(getAssets(),"fonts/RB.ttf") ;
+        Typeface custom_font = Typeface.createFromAsset(getAssets(), "fonts/RB.ttf") ;
         textView1.setTypeface(custom_font);
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -71,59 +91,29 @@ public class SavedLocations extends Activity {
                         "yes", new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        TextView et = (TextView)view.findViewById(R.id.Name);
+                        TextView et = (TextView) view.findViewById(R.id.Name);
                         String name = et.getText().toString();
                         onItemClick(name);
-                        new SnackBar(SavedLocations.this,"Deleted",null,null).show();
+                        new SnackBar(SavedLocations.this, "Deleted", null, null).show();
                         CustomListViewValuesArr.clear();
-                        CustomListViewValuesArr=getAllComments();
+                        CustomListViewValuesArr = getAllComments();
                         adapter.notifyDataSetChanged();
                     }
                 }).show();
-
                 return true;
             }
         });
        }
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_test, menu);
-        return true;
-    }
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.delete) {
-            new SweetAlertDialog(SavedLocations.this, SweetAlertDialog.WARNING_TYPE)
-                    .setTitleText("Are you sure?")
-                    .setContentText("Won't be able to recover this Data!")
-                    .setConfirmText("Yes,delete it!")
-                    .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                        @Override
-                        public void onClick(SweetAlertDialog sDialog) {
-                            CustomListViewValuesArr.clear();
-                            showTableValues();
-                            sDialog
-                                    .setTitleText("Deleted!")
-                                    .setContentText("Your Loacations have been deleted!")
-                                    .setConfirmText("OK")
-                                    .setConfirmClickListener(null)
-                                    .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
-                        }
-                    })
-                    .show();
-
-            return true;
+    private void deleteAll() {
+        Uri uri = LocationProvider.CONTENT_URI;
+        Cursor c = managedQuery(uri, null, null, null, "name");
+        if (c.moveToFirst()) {
+            do{
+                int noD = getContentResolver().delete(LocationProvider.CONTENT_URI,LocationProvider.NAME+" = ? ",new String[]{c.getString(c.getColumnIndex(LocationProvider.NAME))});
+            }while (c.moveToNext());
         }
-
-        return super.onOptionsItemSelected(item);
-    }
-    public void showTableValues(){
-
+        CustomListViewValuesArr.clear();
         adapter.notifyDataSetChanged();
     }
 
