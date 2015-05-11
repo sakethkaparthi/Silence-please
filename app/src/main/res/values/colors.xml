@@ -10,4 +10,5 @@
     <color name="blue_semi_transparent_pressed">#80738ffe</color>
     <color name="blue">#03A9F4</color>
     <color name="blue_pressed">#FF28C2F4</color>
+    <color name="backgroundreside">#2c3e50</color>
 </resources>

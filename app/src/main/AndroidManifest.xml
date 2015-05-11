@@ -42,14 +42,27 @@
             android:label="Saved locations" >
         </activity>
 
-        <service android:name=".Service.BackgroundService"
-           android:exported="false"/>
-        <receiver android:name=".Service.RecieverClass"
-            android:process=":remote"
-            />
-        <provider android:name=".Database.LocationProvider"
-            android:authorities="com.example.provider.LocationDB">
+        <service
+            android:name=".Service.BackgroundService"
+            android:exported="false" />
+
+        <receiver
+            android:name=".Service.RecieverClass"
+            android:process=":remote" />
+
+        <provider
+            android:name=".Database.LocationProvider"
+            android:authorities="com.example.provider.LocationDB" >
         </provider>
+
+        <activity
+            android:name=".Settings"
+            android:label="@string/title_activity_settings" >
+        </activity>
+        <activity
+            android:name=".NewPlace"
+            android:label="@string/title_activity_new_place" >
+        </activity>
     </application>
 
 </manifest>

@@ -31,4 +31,6 @@ dependencies {
     compile 'com.android.support:support-v4:21.0.3'
     compile 'com.rengwuxian.materialedittext:library:2.0.3'
     compile 'me.alexrs:prefs:1.0.3'
+    compile 'com.github.navasmdc:MaterialDesign:1.+@aar'
+
 }

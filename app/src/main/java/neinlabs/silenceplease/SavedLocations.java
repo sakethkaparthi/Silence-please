@@ -4,16 +4,16 @@ import android.app.Activity;
 import android.content.CursorLoader;
 import android.database.Cursor;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.gc.materialdesign.widgets.SnackBar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,42 +61,30 @@ public class SavedLocations extends Activity {
         adapter =new CustomAdapter(this,CustomListViewValuesArr,getResources());
         listView.setAdapter(adapter);
         TextView textView1 = (TextView)findViewById(R.id.tv_locations);
-        Typeface custom_font = Typeface.createFromAsset(getAssets(),"fonts/font.ttf") ;
+        Typeface custom_font = Typeface.createFromAsset(getAssets(),"fonts/RB.ttf") ;
         textView1.setTypeface(custom_font);
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, final View view, final int position, long id) {
-                new SweetAlertDialog(SavedLocations.this, SweetAlertDialog.WARNING_TYPE)
-                        .setTitleText("Are you sure?")
-                        .setContentText("Won't be able to recover this Data!")
-                        .setConfirmText("Yes,delete it!")
-                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                            @Override
-                            public void onClick(SweetAlertDialog sDialog) {
-                                TextView et = (TextView)view.findViewById(R.id.Name);
-                                String name = et.getText().toString();
-                                onItemClick(name);
-                                sDialog
-                                        .setTitleText("Deleted!")
-                                        .setContentText("Your Loacation has been deleted!")
-                                        .setConfirmText("OK")
-                                        .setConfirmClickListener(null)
-                                        .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
-                                CustomListViewValuesArr.clear();
-                                CustomListViewValuesArr=getAllComments();
-                                adapter.notifyDataSetChanged();
-                            }
-                        })
-                        .show();
+                new SnackBar(SavedLocations.this,
+                        "Do you want to delete this data?",
+                        "yes", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        TextView et = (TextView)view.findViewById(R.id.Name);
+                        String name = et.getText().toString();
+                        onItemClick(name);
+                        new SnackBar(SavedLocations.this,"Deleted",null,null).show();
+                        CustomListViewValuesArr.clear();
+                        CustomListViewValuesArr=getAllComments();
+                        adapter.notifyDataSetChanged();
+                    }
+                }).show();
+
                 return true;
             }
         });
-        ImageView imageView = (ImageView)findViewById(R.id.imageView);
-
-        imageView.setImageDrawable(Drawable.createFromPath(""));
-
-
-    }
+       }
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_test, menu);

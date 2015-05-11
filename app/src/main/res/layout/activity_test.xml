@@ -3,12 +3,14 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/menu_background"
+    android:background="@color/backgroundreside"
     >
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:background="#34495e"
+        android:padding="10dp">
         <TextView
             android:id="@+id/tv_locations"
             android:layout_width="fill_parent"
@@ -19,11 +21,6 @@
             android:layout_centerInParent="true"
             android:gravity="center"
             android:textStyle="bold"/>
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/imageView"
-            android:background="@drawable/ic_delete_white_36dp"/>
     </LinearLayout>
 
     <ListView
