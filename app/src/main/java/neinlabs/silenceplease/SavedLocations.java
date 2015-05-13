@@ -26,7 +26,7 @@ public class SavedLocations extends Activity {
     public static ListView listView;
     public static List<Location> CustomListViewValuesArr = new ArrayList<Location>();
     ImageView im;
-
+    com.rey.material.app.Dialog dialog;
     public List<Location> getAllComments() {
         List<Location> comments = new ArrayList<>();
 
@@ -58,7 +58,8 @@ public class SavedLocations extends Activity {
         setContentView(R.layout.activity_test);
         listView=(ListView)findViewById(R.id.list);
         CustomListViewValuesArr= getAllComments();
-        adapter =new CustomAdapter(this,CustomListViewValuesArr,getResources());
+        Typeface custom_font = Typeface.createFromAsset(getAssets(), "fonts/RL.ttf") ;
+        adapter =new CustomAdapter(this,CustomListViewValuesArr,getResources(),custom_font);
         listView.setAdapter(adapter);
         im = (ImageView)findViewById(R.id.deleteall);
         im.setOnClickListener(new View.OnClickListener() {
@@ -80,9 +81,6 @@ public class SavedLocations extends Activity {
                 dialog.show();
             }
         });
-        TextView textView1 = (TextView)findViewById(R.id.tv_locations);
-        Typeface custom_font = Typeface.createFromAsset(getAssets(), "fonts/RB.ttf") ;
-        textView1.setTypeface(custom_font);
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, final View view, final int position, long id) {
@@ -103,6 +101,9 @@ public class SavedLocations extends Activity {
                 return true;
             }
         });
+        TextView textView1 = (TextView)findViewById(R.id.tv_locations);
+        Typeface custom_font2 = Typeface.createFromAsset(getAssets(), "fonts/RB.ttf") ;
+        textView1.setTypeface(custom_font2);
        }
 
     private void deleteAll() {

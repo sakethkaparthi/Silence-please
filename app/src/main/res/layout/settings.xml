@@ -22,15 +22,6 @@
     android:text="Sync Frequency"
     android:textColor="@color/abc_primary_text_material_dark"
     android:textSize="24sp"/>
-<com.rengwuxian.materialedittext.MaterialEditText
-    android:id="@+id/freq"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:inputType="number"
-    app:met_floatingLabelText="Time in minutes"
-    app:met_primaryColor="#fffcfaff"
-    app:met_floatingLabel="highlight"
-    />
 <Button
     android:id="@+id/save_freq"
     android:layout_width="wrap_content"

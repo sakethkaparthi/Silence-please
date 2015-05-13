@@ -1,6 +1,7 @@
 package neinlabs.silenceplease.Utils;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -33,10 +34,11 @@ public class ResideMenuItem extends LinearLayout {
         tv_title.setText(title);
     }
 
-    public ResideMenuItem(Context context, int icon, String title) {
+    public ResideMenuItem(Context context, int icon, String title,Typeface tf) {
         super(context);
         initViews(context);
         iv_icon.setImageResource(icon);
+        tv_title.setTypeface(tf);
         tv_title.setText(title);
     }
 

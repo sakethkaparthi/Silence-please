@@ -31,15 +31,20 @@
         android:gravity="center_horizontal"
         android:textStyle="bold"/>
     </LinearLayout>
-    <RelativeLayout
+    <com.andexert.library.RippleView
+        android:id="@+id/plese"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/top"
+        rv_centered="true">
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="40dp"
         android:paddingLeft="20dp"
         android:paddingRight="20dp"
-        android:id="@+id/plese"
         android:orientation="horizontal"
         android:background="#6634495e"
-        android:layout_below="@id/top">
+        >
         <TextView
             android:id="@+id/appState"
             android:layout_width="wrap_content"
@@ -49,13 +54,18 @@
             android:textSize="18sp"
             android:textColor="@color/abc_primary_text_material_dark"
             />
-        <neinlabs.silenceplease.Utils.Switch
+    </RelativeLayout>
+    </com.andexert.library.RippleView>
+        <com.rey.material.widget.Switch
             android:id="@+id/switchView"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginRight="30dp"
             android:layout_alignParentRight="true"
+            android:layout_below="@id/top"
+            style="@style/Material.Widget.Switch"
             />
-    </RelativeLayout>
+
 <TextView
     android:id="@+id/description"
     android:layout_width="fill_parent"

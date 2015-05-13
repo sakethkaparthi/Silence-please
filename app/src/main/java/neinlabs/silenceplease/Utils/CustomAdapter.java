@@ -3,6 +3,7 @@ package neinlabs.silenceplease.Utils;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,17 +24,18 @@ public class CustomAdapter extends BaseAdapter {
     private List data;
     private static LayoutInflater inflater=null;
     public Resources res;
+    public Typeface tf;
     neinlabs.silenceplease.Location tempValues=null;
     int i=0;
 
     /*************  CustomAdapter Constructor *****************/
-    public CustomAdapter(Activity a, List d, Resources resLocal) {
+    public CustomAdapter(Activity a, List d, Resources resLocal, Typeface custom_font) {
 
         /********** Take passed values **********/
         activity = a;
         data=d;
         res = resLocal;
-
+        tf = custom_font;
         /***********  Layout inflator to call external xml layout () ***********/
         inflater = ( LayoutInflater )activity.
                 getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -86,6 +88,7 @@ public class CustomAdapter extends BaseAdapter {
 
         if(data.size()<=0)
         {
+            holder.name.setTypeface(tf);
             holder.name.setText("No Data");
         }
         else
@@ -95,7 +98,7 @@ public class CustomAdapter extends BaseAdapter {
             tempValues = (neinlabs.silenceplease.Location) data.get(position);
 
             /************  Set Model values in Holder elements ***********/
-
+            holder.name.setTypeface(tf);
             holder.name.setText( tempValues.getName() );
         }
         return vi;
