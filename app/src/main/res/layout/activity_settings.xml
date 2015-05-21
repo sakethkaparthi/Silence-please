@@ -1,9 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@color/backgroundreside"
-    >
-
+    android:background="@color/backgroundreside">
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:padding="10dp"
+        android:orientation="horizontal"
+        android:id="@+id/duration_layout">
+     <TextView
+         android:layout_width="0dp"
+         android:layout_height="wrap_content"
+         android:text="Check every"
+         android:textSize="20sp"
+         android:layout_weight="0.5"
+         android:textColor="@color/abc_primary_text_material_dark"/>
+<com.rey.material.widget.Spinner
+    style="@style/Material.Widget.Spinner.Light"
+    android:id="@+id/Duration_spinner"
+    android:layout_width="0dp"
+    android:layout_weight="0.5"
+    android:layout_height="wrap_content"
+    android:layout_alignParentRight="true"
+    />
 </LinearLayout>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginLeft="20dp"
+        android:id="@+id/Range_tv_layout"
+        android:layout_below="@id/duration_layout"
+        android:orientation="horizontal"
+        >
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.5"
+        android:text="Range"
+        android:textSize="20sp"
+        android:textColor="@color/abc_primary_text_material_dark"/>
+        <TextView
+            android:id="@+id/range_tv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:textSize="20sp"
+            android:textColor="@color/abc_primary_text_material_dark"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginLeft="20dp"
+        android:id="@+id/Range_layout"
+        android:layout_below="@id/Range_tv_layout"
+        >
+        <com.rey.material.widget.Slider
+            style="@style/Material.Widget.Slider.Discrete"
+            android:id="@+id/range_slider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            app:sl_minValue="10"
+            app:sl_maxValue="500"
+            />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginLeft="20dp"
+        android:id="@+id/action_layout"
+        android:layout_below="@id/Range_layout"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="If in range, go"
+            android:textSize="20sp"
+            android:layout_weight="0.5"
+            android:textColor="@color/abc_primary_text_material_dark"/>
+        <com.rey.material.widget.Spinner
+            style="@style/Material.Widget.Spinner.Light"
+            android:id="@+id/Action_spinner"
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:layout_height="wrap_content"
+            />
+    </LinearLayout>
+</RelativeLayout>

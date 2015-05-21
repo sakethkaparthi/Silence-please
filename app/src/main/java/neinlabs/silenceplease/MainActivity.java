@@ -91,8 +91,8 @@ public class MainActivity extends Activity{
 
 
                 // create menu items;
-            String titles[] = { "Saved Locations","New place" };
-            int icon[] = { R.drawable.ic_place_white_24dp,R.drawable.ic_add };
+            String titles[] = { "Saved Locations","New place","Settings" };
+            int icon[] = { R.drawable.ic_place_white_24dp,R.drawable.ic_add,R.drawable.icon_settings };
 
             for (int i = 0; i < titles.length; i++){
                 final ResideMenuItem item = new ResideMenuItem(this, icon[i], titles[i],custom_font2);
@@ -105,6 +105,9 @@ public class MainActivity extends Activity{
                         }
                         if (item.getTitle() == "New place") {
                             startActivity(new Intent(MainActivity.this, NewPlace.class));
+                        }
+                        if (item.getTitle() == "Settings") {
+                            startActivity(new Intent(MainActivity.this, Settings.class));
                         }
                     }
                 });
@@ -135,7 +138,24 @@ public class MainActivity extends Activity{
             Log.d("no","cancelled lel");
     }
         public void scheduleAlarm() {
-            long time =1;
+            long time = 1;
+            switch (Prefs.with(this).getInt("position",0)){
+                case 0:
+                    time = 1;
+                    break;
+                case 1:
+                    time = 5;
+                    break;
+                case 2:
+                    time=10;
+                    break;
+                case 3:
+                    time = 30;
+                    break;
+                case 4:
+                    time=60;
+                    break;
+            }
             Log.d("sync_freq",String.valueOf(time));
                 // Construct an intent that will execute the AlarmReceiver
             Intent intent = new Intent(getApplicationContext(), RecieverClass.class);

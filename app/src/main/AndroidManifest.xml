@@ -63,6 +63,12 @@
             android:name=".NewPlace"
             android:label="@string/title_activity_new_place" >
         </activity>
+        <receiver
+            android:name="neinlabs.silenceplease.BroadcastReciever">
+            <intent-filter>
+                <action android:name="android.location.PROVIDERS_CHANGED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

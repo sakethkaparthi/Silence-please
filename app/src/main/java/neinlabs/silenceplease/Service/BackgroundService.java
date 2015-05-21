@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import me.alexrs.prefs.lib.Prefs;
+import neinlabs.silenceplease.BroadcastReciever;
 import neinlabs.silenceplease.Database.LocationProvider;
 import neinlabs.silenceplease.Location;
 import neinlabs.silenceplease.R;
@@ -72,6 +74,11 @@ public class BackgroundService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         mSettings = getApplication().getSharedPreferences("Settings", 0);
+        BroadcastReciever reciever = new BroadcastReciever();
+        if(reciever.getStop()){
+            Log.d("service","stopped man");
+            stopSelf();
+            }
         LocationManager lm = null;
         boolean gps_enabled = false,network_enabled = false;
         if(lm==null)
@@ -111,8 +118,13 @@ public class BackgroundService extends IntentService {
     }
     public void CheckIfInRange(Double d){
         myAudioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
-        if(d<100.0){
-            myAudioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+        if(d< Prefs.with(getApplicationContext()).getInt("slider_val",100)){
+            Log.d("settings", String.valueOf(Prefs.with(getApplicationContext()).getInt("slider_val", 100)));
+            if(Prefs.with(getApplicationContext()).getInt("action_pos",0)==0) {
+                myAudioManager.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
+            }else{
+                myAudioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+            }
         }
     }
     public class FetchDistanceTask extends AsyncTask<String, Void, String> {
