@@ -8,20 +8,20 @@
 
 
     <LinearLayout
-        android:id="@+id/top"
-        android:layout_width="fill_parent"
+    android:id="@+id/top"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="#34495e"
+    android:padding="10dp"
+    >
+    <ImageView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="#34495e"
-        android:padding="10dp"
-        >
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/imageView2"
-            android:background="@drawable/ic_menu_white_18dp" />
-        <TextView
-            android:id="@+id/tv_appname"
+        android:id="@+id/imageView2"
+        android:background="@drawable/ic_menu_white_18dp" />
+    <TextView
+        android:id="@+id/tv_appname"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="Silence Please"
@@ -29,7 +29,7 @@
         android:textSize="24sp"
         android:gravity="center_horizontal"
         android:textStyle="bold"/>
-    </LinearLayout>
+</LinearLayout>
     <com.andexert.library.RippleView
         android:id="@+id/plese"
         android:layout_width="fill_parent"

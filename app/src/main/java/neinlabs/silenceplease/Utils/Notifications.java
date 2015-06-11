@@ -39,7 +39,6 @@ public class Notifications {
                 .setSound(soundUri).setAutoCancel(true).build();
         NotificationManager mNotifyMgr = (NotificationManager) context
                 .getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotifyMgr.cancelAll();
         mNotifyMgr.notify(0, mBuilder);
     }
 
@@ -53,7 +52,7 @@ public class Notifications {
      * @param context      Context of the class which is deploying the notification
      */
     public void showNotificationNoSound(String title, String subtitle,
-                                        int icon, Intent resultIntent, Context context) {
+                                        int icon, Intent resultIntent, Context context,int unique_id) {
 
         PendingIntent pendingResultIntent = PendingIntent.getActivity(context,
                 0, resultIntent, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -63,7 +62,12 @@ public class Notifications {
                 .setAutoCancel(true).build();
         NotificationManager mNotifyMgr = (NotificationManager) context
                 .getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotifyMgr.cancelAll();
-        mNotifyMgr.notify(0, mBuilder);
+        mNotifyMgr.notify(unique_id, mBuilder);
     }
+    public void clearNotifications(Context context){
+        NotificationManager mNotifyMgr = (NotificationManager) context
+                .getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotifyMgr.cancelAll();
+    }
+
 }

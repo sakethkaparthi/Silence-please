@@ -11,6 +11,7 @@ import android.util.Log;
 import me.alexrs.prefs.lib.Prefs;
 import neinlabs.silenceplease.Service.BackgroundService;
 import neinlabs.silenceplease.Service.RecieverClass;
+import neinlabs.silenceplease.Utils.Potato;
 
 /**
  * Created by Saketh on 14-05-2015.
@@ -43,6 +44,7 @@ public class BroadcastReciever extends BroadcastReceiver {
                 alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, firstMillis, intervalMillis, pIntent);
             }else if(!gps_enabled){
                 {
+                    Potato.potate().getNotifications().clearNotifications(context);
                     Intent intent2 = new Intent(context, RecieverClass.class);
                     final PendingIntent pIntent = PendingIntent.getBroadcast(context, RecieverClass.REQUEST_CODE,
                             intent2, PendingIntent.FLAG_UPDATE_CURRENT);

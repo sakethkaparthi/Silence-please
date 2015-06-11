@@ -1,5 +1,5 @@
 <resources>
     <style name="MyCustomTheme" parent="Theme.AppCompat.Light">
-        <item name="colorPrimary">#0003A9F4</item>
+        <item name="colorPrimary">#03A9F4</item>
     </style>
 </resources>

@@ -74,4 +74,50 @@
     android:textSize="15sp"
     android:textColor="@color/abc_primary_text_material_dark"
     />
+    <LinearLayout
+        android:orientation="vertical"
+        android:id="@+id/okay"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/backgroundreside"
+        android:layout_below="@id/description"
+        >
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@color/backgroundreside"
+            android:padding="10dp">
+            <TextView
+                android:id="@+id/tv_locations"
+                android:layout_width="0dp"
+                android:layout_weight=".95"
+                android:layout_height="wrap_content"
+                android:text="Saved Locations"
+                android:textColor="@color/abc_primary_text_material_dark"
+                android:textSize="24sp"
+                android:layout_centerInParent="true"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:padding="2dp"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/deleteall"
+                android:background="@drawable/ic_delete_white_18dp" />
+
+        </LinearLayout>
+<com.gc.materialdesign.views.ScrollView
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content">
+        <ListView
+            android:id="@+id/list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="#00000000"
+            >
+        </ListView>
+</com.gc.materialdesign.views.ScrollView>
+    </LinearLayout>
 </RelativeLayout>

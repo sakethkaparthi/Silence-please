@@ -1,11 +1,13 @@
 package neinlabs.silenceplease.Service;
 
 import android.app.IntentService;
+import android.app.Notification;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.media.AudioManager;
@@ -13,6 +15,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -42,7 +46,6 @@ import neinlabs.silenceplease.Utils.Potato;
  */
 public class BackgroundService extends IntentService {
     static List<Location> list;
-    SharedPreferences mSettings;
     AudioManager myAudioManager;
     public BackgroundService() {
         super("test-service");
@@ -73,8 +76,10 @@ public class BackgroundService extends IntentService {
     }
     @Override
     protected void onHandleIntent(Intent intent) {
-        mSettings = getApplication().getSharedPreferences("Settings", 0);
         BroadcastReciever reciever = new BroadcastReciever();
+        Context mContext = getApplicationContext();
+        NotificationManagerCompat notificationManager =
+                NotificationManagerCompat.from(mContext);
         if(reciever.getStop()){
             Log.d("service","stopped man");
             stopSelf();
@@ -87,12 +92,11 @@ public class BackgroundService extends IntentService {
             gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
         }catch(Exception ex){}
         try{
-            network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+            network_enabled = Potato.potate().getUtils().isInternetConnected(mContext);
         }catch(Exception ex){}
-        if(!gps_enabled){
-            Potato.potate().getNotifications().showNotificationNoSound("GPS Connectivity Error","You have location services disabled", R.drawable.ic_place_white_24dp,new Intent( Settings.ACTION_LOCATION_SOURCE_SETTINGS),getApplicationContext());
-           }
-        Log.d("service",String.valueOf(mSettings.getInt("sync_frequency",1)));
+        Bitmap bitmapMila = BitmapFactory.decodeResource(getResources(), R.drawable.ic_error_red_18dp);
+
+        notifications(gps_enabled,network_enabled,notificationManager,bitmapMila,mContext);
         list=getAllComments();
         Log.d("service", "start");
         MyLocation myLocation = new MyLocation();
@@ -219,7 +223,9 @@ public class BackgroundService extends IntentService {
 
         @Override
         protected void onPostExecute(String result) {
-            CheckIfInRange(Double.parseDouble(result));
+            if (result != null) {
+                CheckIfInRange(Double.parseDouble(result));
+            }
         }
 
     }
@@ -307,6 +313,29 @@ public class BackgroundService extends IntentService {
                 }
             }
             return bestLocation;
+        }
+    }
+    public void notifications(boolean gps,boolean network,NotificationManagerCompat notificationManager,Bitmap bitmapMila,Context mContext ){
+
+        if(!gps && network){
+            Potato.potate().getNotifications().showNotificationNoSound("Connectivity Error", "You have location services disabled", R.drawable.ic_place_white_24dp, new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS), getApplicationContext(), 0);
+        }
+        if(!network && gps){
+            Potato.potate().getNotifications().showNotificationNoSound("Internet Connectivity Error", "You have internet services disabled", R.drawable.ic_error_red_18dp, new Intent(Settings.ACTION_WIFI_SETTINGS), getApplicationContext(), 1);
+        }
+        if(!gps && !network){
+            Notification summaryNotification = new NotificationCompat.Builder(mContext)
+                    .setLargeIcon(bitmapMila)
+                    .setContentTitle("Silence please error")
+                    .setStyle(new NotificationCompat.InboxStyle()
+                            .addLine("GPS   Location disabled")
+                            .addLine("Internet   No internet access")
+                            .setBigContentTitle("Connectivity error"))
+                    .setGroup("error")
+                    .setGroupSummary(true)
+                    .setSmallIcon(R.drawable.ic_error_red_18dp)
+                    .build();
+            notificationManager.notify(2, summaryNotification);
         }
     }
 }

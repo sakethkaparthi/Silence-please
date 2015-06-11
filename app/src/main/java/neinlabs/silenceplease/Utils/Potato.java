@@ -7,7 +7,6 @@ package neinlabs.silenceplease.Utils;
  * Date : 22/10/14
  */
 public class Potato {
-
     public static Potato potate() {
         return new Potato();
     }
@@ -19,7 +18,4 @@ public class Potato {
     public Notifications getNotifications() {
         return new Notifications();
     }
-
-
-
 }
