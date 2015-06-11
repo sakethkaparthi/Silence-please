@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:layout_height="fill_parent"
+    android:layout_width="fill_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/HomeScreen"
+    >
+
+
+    <LinearLayout
+    android:id="@+id/top"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="#34495e"
+    android:padding="10dp"
+    >
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView2"
+        android:background="@drawable/ic_menu_white_18dp" />
+    <TextView
+        android:id="@+id/tv_appname"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Silence Please"
+        android:textColor="@color/abc_primary_text_material_dark"
+        android:textSize="24sp"
+        android:gravity="center_horizontal"
+        android:textStyle="bold"/>
+</LinearLayout>
+    <com.andexert.library.RippleView
+        android:id="@+id/plese"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/top"
+        rv_centered="true">
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="40dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:orientation="horizontal"
+        android:background="#6634495e"
+        >
+        <TextView
+            android:id="@+id/appState"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:textSize="18sp"
+            android:textColor="@color/abc_primary_text_material_dark"
+            />
+    </RelativeLayout>
+    </com.andexert.library.RippleView>
+        <com.rey.material.widget.Switch
+            android:id="@+id/switchView"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginRight="30dp"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/top"
+            style="@style/Material.Widget.Switch"
+            />
+
+<TextView
+    android:id="@+id/description"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="50dp"
+    android:layout_below="@id/plese"
+    android:textSize="15sp"
+    android:textColor="@color/abc_primary_text_material_dark"
+    />
+</RelativeLayout>
