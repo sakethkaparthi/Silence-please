@@ -23,6 +23,8 @@ import android.widget.TextView;
 import com.andexert.library.RippleView;
 import com.gc.materialdesign.widgets.Dialog;
 import com.gc.materialdesign.widgets.SnackBar;
+import com.github.amlcurran.showcaseview.ShowcaseView;
+import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.rey.material.widget.Switch;
 
 import java.util.ArrayList;
@@ -234,6 +236,12 @@ public class MainActivity extends Activity {
         String text = "Silence Please is a free <a href=\"https://github.com/sakethkaparthi/Silence-please\">Open source</a> android application which helps in turning the mobile to silent mode at desired locations without manual work. Start by adding a location from the menu on top left. Please feel free to send a pull request or open an issue";
         desc.setMovementMethod(LinkMovementMethod.getInstance());
         desc.setText(Html.fromHtml(text));
+        ViewTarget target = new ViewTarget(R.id.imageView2,this);
+        if(Prefs.with(this).getBoolean("homefirst",true)) {
+            new ShowcaseView.Builder(this).setTarget(target).setContentTitle("Menu").setContentText("Touch the button to open menu").hideOnTouchOutside().build();
+            Prefs.with(this).save("homefirst",false);
+        }
+
     }
 
     public void cancelAlarm() {

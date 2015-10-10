@@ -14,10 +14,13 @@ import android.widget.TextView;
 
 import com.gc.materialdesign.widgets.Dialog;
 import com.gc.materialdesign.widgets.SnackBar;
+import com.github.amlcurran.showcaseview.ShowcaseView;
+import com.github.amlcurran.showcaseview.targets.ViewTarget;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import me.alexrs.prefs.lib.Prefs;
 import sakethkaparthi.silenceplease.Database.LocationProvider;
 import sakethkaparthi.silenceplease.Utils.CustomAdapter;
 
@@ -104,6 +107,11 @@ public class SavedLocations extends Activity {
         TextView textView1 = (TextView)findViewById(R.id.tv_locations);
         Typeface custom_font2 = Typeface.createFromAsset(getAssets(), "fonts/RB.ttf") ;
         textView1.setTypeface(custom_font2);
+        ViewTarget target = new ViewTarget(R.id.deleteall,this);
+        if(Prefs.with(this).getBoolean("savedfirst",true)){
+            new ShowcaseView.Builder(this).setTarget(target).setContentTitle("Deleting").setContentText("Press this button to delete all locations or hold each location to delete them").build();
+            Prefs.with(this).save("savedfirst",false);
+        }
        }
 
     private void deleteAll() {

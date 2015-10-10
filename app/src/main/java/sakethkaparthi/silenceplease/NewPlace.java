@@ -13,6 +13,8 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.gc.materialdesign.views.ButtonFloat;
+import com.github.amlcurran.showcaseview.ShowcaseView;
+import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -23,6 +25,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 import me.alexrs.prefs.lib.Prefs;
 import sakethkaparthi.silenceplease.Database.LocationProvider;
 
@@ -39,7 +43,18 @@ public class NewPlace extends Activity implements OnMapReadyCallback,GoogleMap.O
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         fb = (ButtonFloat)findViewById(R.id.fab);
+        fb.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Crouton.makeText(NewPlace.this,"First Drop a pin by touching on a place on map",Style.ALERT).show();
+            }
+        });
         et = (EditText)findViewById(R.id.et);
+        ViewTarget target = new ViewTarget(R.id.map,this);
+        if(Prefs.with(this).getBoolean("newfirst1",true)) {
+            new ShowcaseView.Builder(this).setTarget(target).setContentTitle("New place").setContentText("Drop a pin by touching on the place you want to save on the map").hideOnTouchOutside().build();
+            Prefs.with(this).save("newfirst1",false);
+        }
     }
 
     @Override
@@ -73,6 +88,11 @@ public class NewPlace extends Activity implements OnMapReadyCallback,GoogleMap.O
     }
     @Override
     public void onMapClick(final LatLng latLng) {
+        ViewTarget target = new ViewTarget(R.id.fab,this);
+        if(Prefs.with(NewPlace.this).getBoolean("newfirst2",true)){
+            new ShowcaseView.Builder(this).setTarget(target).setContentTitle("New place").setContentText("Enter the name and press this button to save the new place").hideOnTouchOutside().build();
+            Prefs.with(NewPlace.this).save("newfirst2",false);
+        }
         myMap.clear();
         addMarkers();
         MarkerOptions marker = new MarkerOptions().position(latLng).title("New place");
@@ -84,17 +104,21 @@ public class NewPlace extends Activity implements OnMapReadyCallback,GoogleMap.O
             @Override
             public void onClick(View v) {
                 // Add a new student record
-                ContentValues values = new ContentValues();
-                values.put(LocationProvider.NAME,
-                        ((EditText) findViewById(R.id.et)).getText().toString());
+                if(!(((EditText)findViewById(R.id.et)).getText().toString().isEmpty())) {
+                    ContentValues values = new ContentValues();
+                    values.put(LocationProvider.NAME,
+                            ((EditText) findViewById(R.id.et)).getText().toString());
 
-                values.put(LocationProvider.latitude,
-                        String.valueOf(latLng.latitude));
-                values.put(LocationProvider.longitude,
-                        String.valueOf(latLng.longitude));
-                Uri uri = getContentResolver().insert(
-                        LocationProvider.CONTENT_URI, values);
-                startActivity(new Intent(NewPlace.this, SavedLocations.class));
+                    values.put(LocationProvider.latitude,
+                            String.valueOf(latLng.latitude));
+                    values.put(LocationProvider.longitude,
+                            String.valueOf(latLng.longitude));
+                    Uri uri = getContentResolver().insert(
+                            LocationProvider.CONTENT_URI, values);
+                    startActivity(new Intent(NewPlace.this, SavedLocations.class));
+                }else {
+                    Crouton.makeText(NewPlace.this,"Place name cant be empty", Style.ALERT).show();
+                }
             }
         });
     }
